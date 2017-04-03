@@ -8,16 +8,6 @@
 
 import Foundation
 
-protocol DestructableObject {
-    var radius: Double { get }
-    var origin: (x: Double, y: Double) { get }
-    var position: (x: Double, y: Double) { get }
-    var velocity: Double { get }
-    init(dict: NSMutableDictionary)
-    func destruct()
-    func move(x: Double, y: Double)
-}
-
 class GameModel {
     
     //MARK: - Member Variables
