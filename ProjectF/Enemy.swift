@@ -10,4 +10,8 @@ import Foundation
 
 class Enemy: DestructableObject {
     
+    func fireBullet() {
+        
+    }
+    
 }

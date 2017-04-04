@@ -10,4 +10,8 @@ import Foundation
 
 class Bullet: DestructableObject {
     
+    init(origin: (x: Double, y: Double), position: (x: Double, y: Double), velocity: (x: Double, y: Double)) {
+        super.init(origin: origin, position: position, radius: 1.0, velocity: velocity)
+    }
+    
 }

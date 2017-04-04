@@ -13,12 +13,13 @@ class DestructableObject {
     var radius = 0.0
     var origin = (x: 0.0, y: 0.0)
     var position = (x: 0.0, y: 0.0)
-    let velocity = 0.0
+    var velocity = (x: 0.0, y: 0.0)
     
-    init(origin: (x: Double, y: Double), position: (x: Double, y: Double), radius: Double) {
+    init(origin: (x: Double, y: Double), position: (x: Double, y: Double), radius: Double, velocity: (x: Double, y: Double)) {
         self.origin = origin
         self.position = position
         self.radius = radius
+        self.velocity = velocity
     }
     
     init(dict: NSMutableDictionary) {
@@ -37,12 +38,13 @@ class DestructableObject {
     
     func toDict() -> NSMutableDictionary {
         let dict = NSMutableDictionary()
-        dict.setValue(radius, forKey: "radius")
-        dict.setValue(origin.x, forKey: "originX")
-        dict.setValue(origin.y, forKey: "originY")
-        dict.setValue(position.x, forKey: "positionX")
-        dict.setValue(position.y, forKey: "positionY")
-        dict.setValue(velocity, forKey: "velocity")
+        dict.setValue(radius, forKey: GameModel.RADIUS)
+        dict.setValue(origin.x, forKey: GameModel.ORIGIN_X)
+        dict.setValue(origin.y, forKey: GameModel.ORIGIN_Y)
+        dict.setValue(position.x, forKey: GameModel.POSITION_X)
+        dict.setValue(position.y, forKey: GameModel.POSITION_Y)
+        dict.setValue(velocity.x, forKey: GameModel.VELOCITY_X)
+        dict.setValue(velocity.y, forKey: GameModel.VELOCITY_Y)
         return dict
     }
 }

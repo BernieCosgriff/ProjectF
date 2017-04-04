@@ -12,7 +12,7 @@ class GameModel {
     
     //MARK: - Member Variables
     //TODO: Put in actual values
-    var player = Player(origin: (x: 0.0, y: 0.0), position: (x: 0.0, y: 0.0), radius: -1.0)
+    var player = Player(origin: (x: 0.0, y: 0.0), position: (x: 0.0, y: 0.0), radius: -1.0, velocity: (x: 0.0, y: 0.0))
     var enemies = [Enemy]()
     var bullets = [Bullet]()
     
@@ -22,7 +22,8 @@ class GameModel {
     static let POSITION_X = "positionX"
     static let POSITION_Y = "positionY"
     static let RADIUS = "radius"
-    static let VELOCITY = "velocity"
+    static let VELOCITY_X = "velocityX"
+    static let VELOCITY_Y = "velocityY"
     static let PLAYER = "player"
     static let ENEMIES = "enemies"
     static let BULLETS = "bullets"
