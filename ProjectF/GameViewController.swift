@@ -24,7 +24,7 @@ class GameViewController: GLKViewController {
     }
     
     func update() {
-        print(timeSinceLastUpdate)
+        model.update(timeInterval: timeSinceLastUpdate)
     }
     
     required init?(coder aDecoder: NSCoder) {

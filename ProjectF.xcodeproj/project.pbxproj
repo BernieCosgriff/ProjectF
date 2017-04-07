@@ -18,7 +18,7 @@
 		A6284F961E91907E005D8A55 /* MenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6284F951E91907E005D8A55 /* MenuViewController.swift */; };
 		A6284F981E9190A7005D8A55 /* MenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6284F971E9190A7005D8A55 /* MenuView.swift */; };
 		A6284F9D1E919106005D8A55 /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6284F9C1E919106005D8A55 /* GameViewController.swift */; };
-		A6284FA01E923045005D8A55 /* DestructableObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6284F9F1E923045005D8A55 /* DestructableObject.swift */; };
+		A6284FAA1E9840A8005D8A55 /* Sprite.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6284FA91E9840A8005D8A55 /* Sprite.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,7 +35,7 @@
 		A6284F951E91907E005D8A55 /* MenuViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuViewController.swift; sourceTree = "<group>"; };
 		A6284F971E9190A7005D8A55 /* MenuView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuView.swift; sourceTree = "<group>"; };
 		A6284F9C1E919106005D8A55 /* GameViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
-		A6284F9F1E923045005D8A55 /* DestructableObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DestructableObject.swift; sourceTree = "<group>"; };
+		A6284FA91E9840A8005D8A55 /* Sprite.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Sprite.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -98,11 +98,11 @@
 		A6284F9B1E9190CC005D8A55 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				A6284FA91E9840A8005D8A55 /* Sprite.swift */,
 				A62687A61E907C1E00118D29 /* GameModel.swift */,
 				A62687A81E917F8600118D29 /* Enemy.swift */,
 				A62687AA1E917F8F00118D29 /* Player.swift */,
 				A62687AC1E917F9900118D29 /* Bullet.swift */,
-				A6284F9F1E923045005D8A55 /* DestructableObject.swift */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -190,11 +190,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				A62687A91E917F8600118D29 /* Enemy.swift in Sources */,
+				A6284FAA1E9840A8005D8A55 /* Sprite.swift in Sources */,
 				A6284F981E9190A7005D8A55 /* MenuView.swift in Sources */,
 				A62687951E90741100118D29 /* AppDelegate.swift in Sources */,
 				A6284F9D1E919106005D8A55 /* GameViewController.swift in Sources */,
 				A6284F961E91907E005D8A55 /* MenuViewController.swift in Sources */,
-				A6284FA01E923045005D8A55 /* DestructableObject.swift in Sources */,
 				A62687AB1E917F8F00118D29 /* Player.swift in Sources */,
 				A62687A71E907C1E00118D29 /* GameModel.swift in Sources */,
 				A62687AD1E917F9900118D29 /* Bullet.swift in Sources */,

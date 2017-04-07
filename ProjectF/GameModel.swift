@@ -8,6 +8,24 @@
 
 import Foundation
 
+protocol DestructableObject {
+    //MARK: - Member Variables
+    var radius: Double { get }
+    var origin: (x: Double, y: Double) { get }
+    var position: (x: Double, y: Double) { get }
+    var velocity: (x: Double, y: Double) { get }
+    
+    //MARK: - Initializers
+    init(dict: NSMutableDictionary)
+    
+    //MARK: - Actions
+    func destruct()
+    func move()
+    
+    //MARK: - Saving
+    func toDict() -> NSMutableDictionary
+}
+
 class GameModel {
     
     //MARK: - Member Variables
@@ -48,9 +66,9 @@ class GameModel {
         }
     }
     
-    //MARK: - Game Logic Functions
+    //MARK: - Game Logic
     func update(timeInterval: TimeInterval) {
-    
+        print(timeInterval.magnitude)
     }
     
     func hasCollided(a: DestructableObject, b: DestructableObject) -> Bool {
@@ -60,7 +78,7 @@ class GameModel {
         return sqrt((xDist * xDist) + (yDist * yDist)) < radiusSum
     }
     
-    //MARK: - Saving Functions
+    //MARK: - Saving
     func save() {
         let gameDict = NSMutableDictionary()
         let enemyArr = NSMutableArray()
