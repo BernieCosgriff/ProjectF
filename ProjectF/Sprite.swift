@@ -10,11 +10,11 @@ import GLKit
 
 class Sprite {
     
-    var positionX: Float = 0.0
-    var positionY: Float = 0.0
+    var position: (x: Float, y: Float) = (x: 0.0, y: 0.0)
+    var radius: Float = 0.0
+    var velocity: (x: Float, y: Float) = (x: 0.0, y: 0.0)
     
-    var scaleX: Float = 1.0
-    var scaleY: Float = 1.0
+    var scale: (x: Float, y: Float) = (x: 1.0, y: 1.0)
     
     // Rotation in radians or degrees
     var rotation: Float = 0.0
@@ -23,19 +23,19 @@ class Sprite {
     private var texture: GLKTextureInfo?
     
     private static let quad: [Float] = [
-        0.4, -0.4,// Point(x,y)
-        1.0, 1.0, //Texture Coordinate (x,y)
-        1.0, 0.0, 0.0, 1.0, //Color (rgba)
+        0.5, -0.5, // Left Top
+        1.0, 1.0,
+        1.0, 0.0, 0.0, 1.0,
         
-        0.4, 0.4,
+        0.5, 0.5, //Left Bottom
         1.0, 0.0,
         0.0, 1.0, 0.0, 1.0,
         
-        -0.4, -0.4,
+        -0.5, -0.5, //Right Top
         0.0, 1.0,
         0.0, 0.0, 1.0, 1.0,
         
-        -0.4, 0.4,
+        -0.5, 0.5, //Right Bottom
         0.0, 0.0,
         1.0, 1.0, 0.0, 1.0,
         ]
@@ -148,8 +148,8 @@ class Sprite {
         glUseProgram(Sprite.program)
         
         glBindTexture(GLenum(GL_TEXTURE_2D), texture!.name)
-        glUniform2f(glGetUniformLocation(Sprite.program, "translate"), positionX, positionY)
-//        glUniform2f(glGetUniformLocation(Sprite.program, "scale"), scaleX, scaleY)
+        glUniform2f(glGetUniformLocation(Sprite.program, "translate"), position.x, position.y)
+        glUniform2f(glGetUniformLocation(Sprite.program, "scale"), scale.x, scale.y)
 //        glUniform1f(glGetUniformLocation(Sprite.program, "rotation"), rotation)
         glDrawArrays(GLenum(GL_TRIANGLE_STRIP), 0, 4)
     }

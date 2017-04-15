@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A618ADCE1EA1A766002DB4A6 /* ShipControlSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A618ADCD1EA1A766002DB4A6 /* ShipControlSet.swift */; };
+		A618ADD01EA1A913002DB4A6 /* ShipControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = A618ADCF1EA1A913002DB4A6 /* ShipControl.swift */; };
 		A62687951E90741100118D29 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A62687941E90741100118D29 /* AppDelegate.swift */; };
 		A626879A1E90741100118D29 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A62687981E90741100118D29 /* Main.storyboard */; };
 		A626879C1E90741100118D29 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A626879B1E90741100118D29 /* Assets.xcassets */; };
@@ -19,9 +21,14 @@
 		A6284F981E9190A7005D8A55 /* MenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6284F971E9190A7005D8A55 /* MenuView.swift */; };
 		A6284F9D1E919106005D8A55 /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6284F9C1E919106005D8A55 /* GameViewController.swift */; };
 		A6284FAA1E9840A8005D8A55 /* Sprite.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6284FA91E9840A8005D8A55 /* Sprite.swift */; };
+		A6F7C6401E984B4600CD89A8 /* sprite_fragment.glsl in Resources */ = {isa = PBXBuildFile; fileRef = A6F7C63E1E984B4600CD89A8 /* sprite_fragment.glsl */; };
+		A6F7C6411E984B4600CD89A8 /* sprite_vertex.glsl in Resources */ = {isa = PBXBuildFile; fileRef = A6F7C63F1E984B4600CD89A8 /* sprite_vertex.glsl */; };
+		A6F7C6431E985AC800CD89A8 /* Background.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6F7C6421E985AC800CD89A8 /* Background.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		A618ADCD1EA1A766002DB4A6 /* ShipControlSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShipControlSet.swift; sourceTree = "<group>"; };
+		A618ADCF1EA1A913002DB4A6 /* ShipControl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShipControl.swift; sourceTree = "<group>"; };
 		A62687911E90741100118D29 /* ProjectF.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ProjectF.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A62687941E90741100118D29 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A62687991E90741100118D29 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -36,6 +43,9 @@
 		A6284F971E9190A7005D8A55 /* MenuView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuView.swift; sourceTree = "<group>"; };
 		A6284F9C1E919106005D8A55 /* GameViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
 		A6284FA91E9840A8005D8A55 /* Sprite.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Sprite.swift; sourceTree = "<group>"; };
+		A6F7C63E1E984B4600CD89A8 /* sprite_fragment.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = sprite_fragment.glsl; sourceTree = "<group>"; };
+		A6F7C63F1E984B4600CD89A8 /* sprite_vertex.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = sprite_vertex.glsl; sourceTree = "<group>"; };
+		A6F7C6421E985AC800CD89A8 /* Background.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Background.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,6 +78,8 @@
 		A62687931E90741100118D29 /* ProjectF */ = {
 			isa = PBXGroup;
 			children = (
+				A6F7C63E1E984B4600CD89A8 /* sprite_fragment.glsl */,
+				A6F7C63F1E984B4600CD89A8 /* sprite_vertex.glsl */,
 				A6284F9E1E91916B005D8A55 /* Other */,
 				A6284F9B1E9190CC005D8A55 /* Models */,
 				A6284F9A1E9190C7005D8A55 /* Controllers */,
@@ -99,6 +111,7 @@
 			isa = PBXGroup;
 			children = (
 				A6284FA91E9840A8005D8A55 /* Sprite.swift */,
+				A6F7C6421E985AC800CD89A8 /* Background.swift */,
 				A62687A61E907C1E00118D29 /* GameModel.swift */,
 				A62687A81E917F8600118D29 /* Enemy.swift */,
 				A62687AA1E917F8F00118D29 /* Player.swift */,
@@ -113,6 +126,8 @@
 				A62687941E90741100118D29 /* AppDelegate.swift */,
 				A626879B1E90741100118D29 /* Assets.xcassets */,
 				A62687A01E90741100118D29 /* Info.plist */,
+				A618ADCD1EA1A766002DB4A6 /* ShipControlSet.swift */,
+				A618ADCF1EA1A913002DB4A6 /* ShipControl.swift */,
 			);
 			name = Other;
 			sourceTree = "<group>";
@@ -178,7 +193,9 @@
 			files = (
 				A626879F1E90741100118D29 /* LaunchScreen.storyboard in Resources */,
 				A626879C1E90741100118D29 /* Assets.xcassets in Resources */,
+				A6F7C6401E984B4600CD89A8 /* sprite_fragment.glsl in Resources */,
 				A626879A1E90741100118D29 /* Main.storyboard in Resources */,
+				A6F7C6411E984B4600CD89A8 /* sprite_vertex.glsl in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -193,11 +210,14 @@
 				A6284FAA1E9840A8005D8A55 /* Sprite.swift in Sources */,
 				A6284F981E9190A7005D8A55 /* MenuView.swift in Sources */,
 				A62687951E90741100118D29 /* AppDelegate.swift in Sources */,
+				A618ADCE1EA1A766002DB4A6 /* ShipControlSet.swift in Sources */,
+				A618ADD01EA1A913002DB4A6 /* ShipControl.swift in Sources */,
 				A6284F9D1E919106005D8A55 /* GameViewController.swift in Sources */,
 				A6284F961E91907E005D8A55 /* MenuViewController.swift in Sources */,
 				A62687AB1E917F8F00118D29 /* Player.swift in Sources */,
 				A62687A71E907C1E00118D29 /* GameModel.swift in Sources */,
 				A62687AD1E917F9900118D29 /* Bullet.swift in Sources */,
+				A6F7C6431E985AC800CD89A8 /* Background.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
