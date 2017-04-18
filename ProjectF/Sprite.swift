@@ -150,7 +150,7 @@ class Sprite {
         glBindTexture(GLenum(GL_TEXTURE_2D), texture!.name)
         glUniform2f(glGetUniformLocation(Sprite.program, "translate"), position.x, position.y)
         glUniform2f(glGetUniformLocation(Sprite.program, "scale"), scale.x, scale.y)
-//        glUniform1f(glGetUniformLocation(Sprite.program, "rotation"), rotation)
+        glUniform1f(glGetUniformLocation(Sprite.program, "rotation"), rotation)
         glDrawArrays(GLenum(GL_TRIANGLE_STRIP), 0, 4)
     }
     

@@ -28,15 +28,6 @@ class Background: Sprite {
     }
     
     //MARK: - Actions
-    func fireBullet(velocity: (x: Float, y: Float)) -> Bullet {
-        //TODO: Actual Image
-        return Bullet(position: position, velocity: velocity)
-    }
-    
-    func destruct() {
-        
-    }
-    
     func move() {
         position.x = position.x + velocity.x
         position.y = position.y + velocity.y

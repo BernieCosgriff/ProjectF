@@ -10,6 +10,8 @@ import UIKit
 
 class Player: Sprite {
     
+    let laser = UIImage(named: "PlayerLaser")!
+    
     //MARK: - Member Variables
     let bulletVelocity: (x: Float, y: Float) = (x: 0.0, y: 0.04)
     let PLAYER_START: (x: Float, y: Float) = (x: 0.0, y: -0.45)
@@ -34,7 +36,7 @@ class Player: Sprite {
     func fireBullet() -> Bullet {
         var position = self.position
         position.y = position.y + radius
-        return Bullet(position: position, velocity: bulletVelocity)
+        return Bullet(position: position, velocity: bulletVelocity, image: laser, rotation: 0.0)
     }
     
     func destruct() {

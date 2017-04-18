@@ -41,7 +41,6 @@ class ShipControl: UIControl {
         let touch = touches.first!.location(in: self)
         if(inside(x: touch.x, y: touch.y)) {
             sendActions(for: .touchDown)
-            print("Touches Began")
         }
     }
     
@@ -49,15 +48,12 @@ class ShipControl: UIControl {
         let touch = touches.first!.location(in: self)
         if(inside(x: touch.x, y: touch.y)) {
             sendActions(for: .touchDown)
-            print("Touches Moved Inside")
         } else {
             sendActions(for: .touchCancel)
-            print("Touches Moved Outside")
         }
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         sendActions(for: .touchCancel)
-        print("Touches Ended")
     }
 }

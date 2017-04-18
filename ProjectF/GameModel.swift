@@ -34,6 +34,7 @@ class GameModel {
     var bullets = [Bullet]()
     let playerVelocityX: Float = 0.05
     let playerVelocityY: Float = 0.025
+    private var timePassed: Double = 0.0
     
     //MARK: - Constants
     static let ORIGIN_X = "originX"
@@ -74,7 +75,23 @@ class GameModel {
     
     //MARK: - Game Logic
     func update(timeInterval: TimeInterval) {
-//        print(timeInterval.magnitude)
+        timePassed += timeInterval.magnitude
+        
+        if(timePassed >= 1 && enemies.count == 0) {
+            let newEnemy = Enemy(position: (x: -1.1, y: 0.8), radius: 0.1, velocity: (x: 0.01, y: 0.0))
+            enemies.append(newEnemy)
+            // TODO: Figure out async timer
+//            let timerQueue = OperationQueue()
+//            timerQueue.addOperation {
+//                
+//            }
+            Timer.scheduledTimer(withTimeInterval: 3, repeats: true, block: {
+                [weak self] timer in
+                self?.bullets.append((self?.enemies[self!.enemies.count - 1].fireBullet(playerPosition: self!.player!.position))!)
+            })
+        }
+        
+        //Move
         player?.move()
         background?.move()
         for bullet in bullets {

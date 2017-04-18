@@ -11,9 +11,9 @@ import UIKit
 class Bullet: Sprite {
     
     //MARK: - Initializers
-    init(position: (x: Float, y: Float), velocity: (x: Float, y: Float)) {
+    init(position: (x: Float, y: Float), velocity: (x: Float, y: Float), image: UIImage, rotation: Float) {
         //TODO: Actual Image
-        super.init(image: UIImage(named: "PlayerLaser")!)
+        super.init(image: image)
         self.position = position
         self.velocity = velocity
         self.scale = (x: 0.03,y: 0.03)
@@ -21,7 +21,7 @@ class Bullet: Sprite {
     
     required init(dict: NSMutableDictionary) {
         super.init(image: UIImage(named: "PlayerLaser")!)
-        self.scale = (x: 0.01,y: 0.01)
+        self.scale = (x: 0.03,y: 0.03)
         position = (x: dict.value(forKey: GameModel.POSITION_X) as! Float, y: dict.value(forKey: GameModel.POSITION_Y) as! Float)
         radius = dict.value(forKey: GameModel.RADIUS) as! Float
         velocity = (x: dict.value(forKey: GameModel.VELOCITY_X) as! Float, y: dict.value(forKey: GameModel.VELOCITY_Y) as! Float)
