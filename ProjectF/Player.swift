@@ -8,13 +8,14 @@
 
 import UIKit
 
-class Player: Sprite {
-    
-    let laser = UIImage(named: "PlayerLaser")!
+class Player: Sprite, DestructableObject {
     
     //MARK: - Member Variables
-    let bulletVelocity: (x: Float, y: Float) = (x: 0.0, y: 0.04)
-    let PLAYER_START: (x: Float, y: Float) = (x: 0.0, y: -0.45)
+    private let laser = UIImage(named: "PlayerLaser")!
+    private let bulletVelocity: (x: Float, y: Float) = (x: 0.0, y: 0.04)
+    private let PLAYER_START: (x: Float, y: Float) = (x: 0.0, y: -0.45)
+    private var lives = 5
+    var destructionHandler: ((_ object: DestructableObject, _ index: Int) -> Void)?
     
     //MARK: - Initializers
     init() {
@@ -25,7 +26,7 @@ class Player: Sprite {
         self.scale = GameModel.SHIP_SIZE
     }
     
-    required init(dict: NSMutableDictionary) {
+    required init(dict: NSMutableDictionary, index: Int) {
         super.init(image: UIImage(named: "Player")!)
         position = (x: dict.value(forKey: GameModel.POSITION_X) as! Float, y: dict.value(forKey: GameModel.POSITION_Y) as! Float)
         radius = dict.value(forKey: GameModel.RADIUS) as! Float
@@ -33,14 +34,18 @@ class Player: Sprite {
     }
     
     //MARK: - Actions
-    func fireBullet() -> Bullet {
+    func fireBullet(index: Int) -> Bullet {
         var position = self.position
         position.y = position.y + radius
-        return Bullet(position: position, velocity: bulletVelocity, image: laser, rotation: 0.0)
+        return PlayerBullet(position: position, velocity: bulletVelocity, image: laser, rotation: 0.0, index: index)
     }
     
     func destruct() {
-        
+        //TODO: Show Damage
+        lives -= 1
+        if lives == 0 {
+            destructionHandler?(self, 0)
+        }
     }
     
     func move() {

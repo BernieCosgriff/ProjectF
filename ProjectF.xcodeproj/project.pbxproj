@@ -21,6 +21,8 @@
 		A6284F981E9190A7005D8A55 /* MenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6284F971E9190A7005D8A55 /* MenuView.swift */; };
 		A6284F9D1E919106005D8A55 /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6284F9C1E919106005D8A55 /* GameViewController.swift */; };
 		A6284FAA1E9840A8005D8A55 /* Sprite.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6284FA91E9840A8005D8A55 /* Sprite.swift */; };
+		A6A360971EA8283600B7AAB3 /* EnemyBullet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6A360961EA8283600B7AAB3 /* EnemyBullet.swift */; };
+		A6A360991EA8284200B7AAB3 /* PlayerBullet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6A360981EA8284200B7AAB3 /* PlayerBullet.swift */; };
 		A6F7C6401E984B4600CD89A8 /* sprite_fragment.glsl in Resources */ = {isa = PBXBuildFile; fileRef = A6F7C63E1E984B4600CD89A8 /* sprite_fragment.glsl */; };
 		A6F7C6411E984B4600CD89A8 /* sprite_vertex.glsl in Resources */ = {isa = PBXBuildFile; fileRef = A6F7C63F1E984B4600CD89A8 /* sprite_vertex.glsl */; };
 		A6F7C6431E985AC800CD89A8 /* Background.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6F7C6421E985AC800CD89A8 /* Background.swift */; };
@@ -43,6 +45,8 @@
 		A6284F971E9190A7005D8A55 /* MenuView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuView.swift; sourceTree = "<group>"; };
 		A6284F9C1E919106005D8A55 /* GameViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
 		A6284FA91E9840A8005D8A55 /* Sprite.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Sprite.swift; sourceTree = "<group>"; };
+		A6A360961EA8283600B7AAB3 /* EnemyBullet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnemyBullet.swift; sourceTree = "<group>"; };
+		A6A360981EA8284200B7AAB3 /* PlayerBullet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlayerBullet.swift; sourceTree = "<group>"; };
 		A6F7C63E1E984B4600CD89A8 /* sprite_fragment.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = sprite_fragment.glsl; sourceTree = "<group>"; };
 		A6F7C63F1E984B4600CD89A8 /* sprite_vertex.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = sprite_vertex.glsl; sourceTree = "<group>"; };
 		A6F7C6421E985AC800CD89A8 /* Background.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Background.swift; sourceTree = "<group>"; };
@@ -116,6 +120,8 @@
 				A62687A81E917F8600118D29 /* Enemy.swift */,
 				A62687AA1E917F8F00118D29 /* Player.swift */,
 				A62687AC1E917F9900118D29 /* Bullet.swift */,
+				A6A360961EA8283600B7AAB3 /* EnemyBullet.swift */,
+				A6A360981EA8284200B7AAB3 /* PlayerBullet.swift */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -208,7 +214,9 @@
 			files = (
 				A62687A91E917F8600118D29 /* Enemy.swift in Sources */,
 				A6284FAA1E9840A8005D8A55 /* Sprite.swift in Sources */,
+				A6A360971EA8283600B7AAB3 /* EnemyBullet.swift in Sources */,
 				A6284F981E9190A7005D8A55 /* MenuView.swift in Sources */,
+				A6A360991EA8284200B7AAB3 /* PlayerBullet.swift in Sources */,
 				A62687951E90741100118D29 /* AppDelegate.swift in Sources */,
 				A618ADCE1EA1A766002DB4A6 /* ShipControlSet.swift in Sources */,
 				A618ADD01EA1A913002DB4A6 /* ShipControl.swift in Sources */,

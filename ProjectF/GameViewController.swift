@@ -56,7 +56,7 @@ class GameViewController: GLKViewController {
         
         model.background?.draw()
         model.player?.draw()
-        for bullet in model.bullets {
+        for bullet in model.playerBullets + model.enemyBullets {
             bullet.draw()
         }
         for enemy in model.enemies {

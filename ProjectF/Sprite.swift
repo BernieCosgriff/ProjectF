@@ -19,7 +19,7 @@ class Sprite {
     // Rotation in radians or degrees
     var rotation: Float = 0.0
     
-    let image: UIImage
+    var image: UIImage!
     private var texture: GLKTextureInfo?
     
     private static let quad: [Float] = [
