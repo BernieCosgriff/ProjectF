@@ -15,10 +15,9 @@ protocol DestructableObject {
     var velocity: (x: Float, y: Float) { get }
     
     //MARK: - Initializers
-    init(dict: NSMutableDictionary, index: Int)
+    init(dict: NSMutableDictionary)
     
     //MARK: - Actions
-    func destruct()
     func move()
     
     //MARK: - Saving
@@ -29,13 +28,19 @@ class GameModel {
     
     //MARK: - Member Variables
     var background: Background?
-    var player: Player?
+    static var player: Player!
+    var boss: Boss?
     var enemies = [Enemy]()
     var playerBullets = [Bullet]()
     var enemyBullets = [Bullet]()
+    var debrisQueue = [Debris]()
+    var livesArr = [PlayerLife]()
+    var score: Score
+    var level = 1
+    var spawnedEnemies = 0
     let playerVelocityX: Float = 0.05
     let playerVelocityY: Float = 0.025
-    private var timePassed: Double = 0.0
+    static var timePassed: Double = 0.0
     
     //MARK: - Constants
     static let ORIGIN_X = "originX"
@@ -54,7 +59,9 @@ class GameModel {
     
     //MARK: - Initializers
     init() {
+        score = Score()
         let path = getPath()
+        var lives = 3
         
         if let dict = NSMutableDictionary(contentsOf: path) {
             //Background
@@ -63,53 +70,110 @@ class GameModel {
             }
             //Player
             if let playerDict: NSMutableDictionary = dict.value(forKey: GameModel.PLAYER) as? NSMutableDictionary {
-                self.player = Player(dict: playerDict, index: 0)
+                GameModel.player = Player(dict: playerDict)
             }
             //Enemies
             if let enemiesArr: [NSMutableDictionary] = dict.value(forKey: GameModel.ENEMIES) as? [NSMutableDictionary] {
                 for enemy in enemiesArr {
-                    enemies.append(Enemy(dict: enemy, index: enemies.count - 1))
+                    enemies.append(Enemy(dict: enemy))
                 }
             }
             //Enemy Bullets
             if let bulletsArr: [NSMutableDictionary] = dict.value(forKey: GameModel.ENEMY_BULLETS) as? [NSMutableDictionary] {
                 for bullet in bulletsArr {
-                    enemyBullets.append(EnemyBullet(dict: bullet, index: enemyBullets.count - 1))
+                    enemyBullets.append(EnemyBullet(dict: bullet))
                 }
             }
             //Player Bullets
             if let bulletsArr: [NSMutableDictionary] = dict.value(forKey: GameModel.PLAYER_BULLETS) as? [NSMutableDictionary] {
                 for bullet in bulletsArr {
-                    playerBullets.append(PlayerBullet(dict: bullet, index: playerBullets.count - 1))
+                    playerBullets.append(PlayerBullet(dict: bullet))
                 }
             }
+            lives = 4
+        } else {
+            GameModel.player = Player()
+            background = Background()
+            initLives(lives: lives)
+        }
+    }
+    
+    func initLives(lives: Int) {
+        for i in 0...lives - 1 {
+            livesArr.append(PlayerLife(position: (x: -0.93 + (Float(i)*0.2), y: 0.88)))
         }
     }
     
     //MARK: - Game Logic
     func update(timeInterval: TimeInterval) {
-        timePassed += timeInterval.magnitude
-        if(timePassed >= 1 && enemies.count == 0) {
-            addEnemy(fireRate: 3)
+        if level == 1 {
+            GameModel.timePassed += timeInterval.magnitude
+            if(GameModel.timePassed >= 1 && spawnedEnemies == 0) {
+//                addEnemy(fireRate: 3, position: (x: -1.1, y: 0.8), path: Enemy.Path.loop, invert: false, boss: true)
+                addEnemy(fireRate: 2, position: (x: -1.1, y: 0.8), path: Enemy.Path.loop, invert: false, boss: false)
+            } else if (GameModel.timePassed >= 3 && spawnedEnemies == 1) {
+                addEnemy(fireRate: 3, position: (x: 1.1, y: 0.6), path: Enemy.Path.zigzag, invert: true, boss: false)
+            } else if(GameModel.timePassed >= 5 && spawnedEnemies == 2) {
+                addEnemy(fireRate: 0, position: (x: -1.1, y: 0.7), path: Enemy.Path.loop, invert: false, boss: false)
+            } else if(GameModel.timePassed >= 6 && spawnedEnemies == 3) {
+                addEnemy(fireRate: 3, position: (x: -1.1, y: 0.5), path: Enemy.Path.zigzag, invert: false, boss: false)
+            } else if(GameModel.timePassed >= 10 && spawnedEnemies == 4) {
+                addEnemy(fireRate: 2, position: (x: -1.1, y: 0.7), path: Enemy.Path.loop, invert: false, boss: false)
+            } else if(GameModel.timePassed >= 12 && spawnedEnemies == 5) {
+                addEnemy(fireRate: 1, position: (x: 1.1, y: 0.7), path: Enemy.Path.loop, invert: true, boss: true)
+            }
+            checkCollisions()
+            move()
         }
-        checkCollisions()
-        move()
     }
     
-    private func addEnemy(fireRate: Double) {
-        let newEnemy = Enemy(position: (x: -1.1, y: 0.8), radius: 0.1, velocity: (x: 0.01, y: 0.0), index: enemies.count)
-        enemies.append(newEnemy)
-        
-        // TODO: Figure out async timer
-        Timer.scheduledTimer(withTimeInterval: fireRate, repeats: true, block: {
-            [weak self] timer in
-            self?.enemyBullets.append((self?.enemies[self!.enemies.count - 1].fireBullet(playerPosition: self!.player!.position, index: self!.enemyBullets.count))!)
-        })
+    private func addEnemy(fireRate: Double, position: (x: Float, y: Float), path: Enemy.Path, invert: Bool, boss: Bool) {
+        spawnedEnemies += 1
+        var newEnemy: Enemy!
+        if boss {
+            self.boss = Boss(position: position, radius: 0.1, path: path, invertX: invert, lives: 3)
+            if fireRate > 0 {
+                self.boss!.setTimer(fireRate: fireRate)
+                self.boss!.bulletHandler = {
+                    [weak self] bullet in
+                    self?.enemyBullets.append(bullet)
+                }
+            }
+            self.boss!.destructionHandler = {
+                [weak self] timer in
+                self?.debrisQueue.insert(Debris(position: self!.boss!.position, velocity: self!.boss!.velocity, scale: self!.boss!.scale), at: 0)
+                Timer.scheduledTimer(withTimeInterval: 2, repeats: false, block: {
+                    [weak self] timer in
+                    self?.debrisQueue.removeLast()
+                })
+                self?.boss = nil
+            }
+        } else {
+            newEnemy = Enemy(position: position, radius: 0.1, path: path, invertX: invert)
+            enemies.append(newEnemy)
+            // TODO: Figure out async timer
+            if fireRate > 0 {
+                newEnemy.setTimer(fireRate: fireRate)
+                newEnemy.bulletHandler = {
+                    [weak self] bullet in
+                    self?.enemyBullets.append(bullet)
+                }
+            }
+            newEnemy.exitHandler = {
+                [weak self] enemy in
+                for (index, element) in self!.enemies.enumerated() {
+                    if enemy === element {
+                        self?.enemies.remove(at: index)
+                    }
+                }
+            }
+        }
     }
     
     private func move() {
-        player?.move()
+        GameModel.player?.move()
         background?.move()
+        boss?.move()
         for bullet in playerBullets {
             bullet.move()
         }
@@ -119,31 +183,71 @@ class GameModel {
         for enemy in enemies {
             enemy.move()
         }
+        for debris in debrisQueue {
+            debris.move()
+        }
     }
     
     private func checkCollisions() {
-        if let player = player {
-            //Enemy - Player
-            for enemy in enemies {
-                if hasCollided(a: player, b: enemy) {
-                    enemy.destruct()
-                    player.destruct()
+        if GameModel.player.hittable {
+            if let player = GameModel.player {
+                //Enemy - Player
+                for (index, element) in enemies.enumerated().reversed() {
+                    if hasCollided(a: player, b: element) {
+                        debrisQueue.insert(Debris(position: element.position, velocity: element.velocity, scale: element.scale), at: 0)
+                        Timer.scheduledTimer(withTimeInterval: 2, repeats: false, block: {
+                            [weak self] timer in
+                            self?.debrisQueue.removeLast()
+                        })
+                        enemies.remove(at: index)
+                        player.hit()
+                        if !livesArr.isEmpty {
+                            livesArr.removeLast()
+                        }
+                    }
                 }
-            }
-            //Player - EnemyBullet
-            for bullet in enemyBullets {
-                if hasCollided(a: player, b: bullet) {
-                    bullet.destruct()
-                    player.destruct()
+                if let boss = boss {
+                    if boss.hittable {
+                        if hasCollided(a: player, b: boss) {
+                            boss.hit()
+                        }
+                    }
+                }
+                //Player - EnemyBullet
+                for (index, element) in enemyBullets.enumerated().reversed() {
+                    if hasCollided(a: player, b: element) {
+                        enemyBullets.remove(at: index)
+                        player.hit()
+                        score.score -= 1
+                        if !livesArr.isEmpty {
+                            livesArr.removeLast()
+                        }
+                        break;
+                    }
                 }
             }
         }
         //Enemy - PlayerBullet
-        for enemy in enemies {
-            for bullet in playerBullets {
-                if hasCollided(a: enemy, b: bullet) {
-                    bullet.destruct()
-                    enemy.destruct()
+        for (index, element) in playerBullets.enumerated().reversed() {
+            if let boss = boss {
+                if boss.hittable {
+                    if hasCollided(a: element, b: boss) {
+                        boss.hit()
+                        playerBullets.remove(at: index)
+                    }
+                }
+            }
+            for i in (0..<enemies.count).reversed() {
+                if hasCollided(a: enemies[i], b: element) {
+                    score.score += 1
+                    let enemy = enemies[i]
+                    debrisQueue.insert(Debris(position: enemy.position, velocity: enemy.velocity, scale: enemy.scale), at: 0)
+                    Timer.scheduledTimer(withTimeInterval: 2, repeats: false, block: {
+                        [weak self] timer in
+                        self?.debrisQueue.removeLast()
+                    })
+                    enemies.remove(at: i)
+                    playerBullets.remove(at: index)
                 }
             }
         }
@@ -156,19 +260,6 @@ class GameModel {
         return sqrt((xDist * xDist) + (yDist * yDist)) < radiusSum
     }
     
-    private func remove(object: DestructableObject, index: Int) {
-        if object is Player {
-            gameLost()
-        } else if let enemy = object as? Enemy {
-            enemies.remove(at: enemy.index)
-        } else if let bullet = object as? EnemyBullet {
-            enemyBullets.remove(at: bullet.index)
-        } else if let bullet = object as? PlayerBullet {
-            playerBullets.remove(at: bullet.index)
-            
-        }
-    }
-    
     private func gameLost() {
         
     }
@@ -176,27 +267,48 @@ class GameModel {
     func setPlayerMovement(value: ShipControlSet.value) {
         switch value {
         case .topStart:
-            player?.velocity.y = playerVelocityY
+            GameModel.player.velocity.y = playerVelocityY
+            GameModel.player.fire = true
         case .topStop:
-            player?.velocity.y = 0.0
+            GameModel.player?.velocity.y = 0.0
+            GameModel.player.fire = false
         case .leftStart:
-            player?.velocity.x = -playerVelocityX
+            GameModel.player?.velocity.x = -playerVelocityX
         case .leftStop:
-            player?.velocity.x = 0.0
+            GameModel.player?.velocity.x = 0.0
         case .middleStart:
-            if let bullet = player?.fireBullet(index: playerBullets.count){
+            if let bullet = GameModel.player?.fireBullet(){
                 playerBullets.append(bullet)
             }
         case .middleStop:
             break;
         case .rightStart:
-            player?.velocity.x = playerVelocityX
+            GameModel.player?.velocity.x = playerVelocityX
         case .rightStop:
-            player?.velocity.x = 0.0
+            GameModel.player?.velocity.x = 0.0
         case .bottomStart:
-            player?.velocity.y = -playerVelocityY
+            GameModel.player?.velocity.y = -playerVelocityY
         case .bottomStop:
-            player?.velocity.y = 0.0
+            GameModel.player?.velocity.y = 0.0
+        }
+    }
+    
+    func draw() {
+        background?.draw()
+        GameModel.player?.draw()
+        boss?.draw()
+        score.draw()
+        for bullet in playerBullets + enemyBullets {
+            bullet.draw()
+        }
+        for enemy in enemies {
+            enemy.draw()
+        }
+        for debris in debrisQueue {
+            debris.draw()
+        }
+        for life in livesArr {
+            life.draw()
         }
     }
     
@@ -209,7 +321,7 @@ class GameModel {
         let enemyBulletArr = NSMutableArray()
         //TODO: player and background optionals
         gameDict.setValue(background?.toDict(), forKey: GameModel.BACKGROUND)
-        gameDict.setValue(player?.toDict(), forKey: GameModel.PLAYER)
+        gameDict.setValue(GameModel.player?.toDict(), forKey: GameModel.PLAYER)
         for enemy in enemies {
             enemyArr.add(enemy.toDict())
         }

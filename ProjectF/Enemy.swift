@@ -11,57 +11,96 @@ import UIKit
 class Enemy: Sprite, DestructableObject {
     
     //MARK: - Member Variables
-    private let laser = UIImage(named: "EnemyLaser")!
-    private let bulletVelocity: (x: Float, y: Float) = (x: 0.02, y: 0.02)
-    private var entered = false
+    let laser = UIImage(named: "EnemyLaser")!
+    let bulletVelocity: (x: Float, y: Float) = (x: 0.02, y: 0.02)
+    var entered = false
     var index: Int = 0
-    var destructionHandler: ((_ object: DestructableObject, _ index: Int) -> Void)?
+    var bulletHandler: ((_ bullet: EnemyBullet) -> Void)?
+    var bulletTimer: Timer?
+    var exitHandler: ((_ sender: Enemy) -> Void)?
+    var path: Path = Path.standard
+    let shipVelocity: (x: Float, y: Float) = (x: 0.01, y: 0.0)
+    var center: (x: Float, y: Float)!
+    var inverted = false
+    
+    enum Path {
+        case standard
+        case zigzag
+        case loop
+    }
     
     //MARK: - Initializers
-    init(position: (x: Float, y: Float), radius: Float, velocity: (x: Float, y: Float), index: Int) {
+    init(position: (x: Float, y: Float), radius: Float, path: Path, invertX: Bool) {
         super.init(image: UIImage(named: "Enemy")!)
         self.position = position
         self.radius = radius
-        self.velocity = velocity
+        self.velocity = shipVelocity
+        if invertX {
+            inverted = true
+            velocity.x = -velocity.x
+        }
+        if path == Path.zigzag {
+            velocity.y = 0.01
+            Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: {
+                [weak self] timer in
+                self?.velocity.y = -self!.velocity.y
+            })
+        }
         self.scale = GameModel.SHIP_SIZE
-        self.index = index
-        
+        self.path = path
+        center = position
     }
     
-    required init(dict: NSMutableDictionary, index: Int) {
+    required init(dict: NSMutableDictionary) {
         super.init(image: UIImage(named: "Enemy")!)
         position = (x: dict.value(forKey: GameModel.POSITION_X) as! Float, y: dict.value(forKey: GameModel.POSITION_Y) as! Float)
         radius = dict.value(forKey: GameModel.RADIUS) as! Float
         velocity = (x: dict.value(forKey: GameModel.VELOCITY_X) as! Float, y: dict.value(forKey: GameModel.VELOCITY_Y) as! Float)
-        self.index = index
     }
     
     //MARK: - Actions
-    func fireBullet(playerPosition: (x: Float, y: Float), index: Int) -> Bullet {
+    func fireBullet(playerPosition: (x: Float, y: Float)) -> EnemyBullet {
         //TODO: Enemy Bullet Image
         let firingPosition = (x: position.x, y: position.y - radius)
         let v = (x: (playerPosition.x - position.x) * bulletVelocity.x, y: (playerPosition.y - position.y) * bulletVelocity.y)
         let rotation = atan2(v.x, v.y)
-        return EnemyBullet(position: firingPosition, velocity: v, image: laser, rotation: rotation, index: index)
+        return EnemyBullet(position: firingPosition, velocity: v, image: laser, rotation: rotation)
     }
     
     func destruct() {
         image = UIImage(named: "EnemyDamage")!
         radius = 0
-        destructionHandler?(self, index)
+        //        destructionHandler?(self)
     }
     
     func move() {
-        if(position.x + radius < 1.0 && position.x - radius > -1.0) {
+        if(!entered && position.x + radius < 1.0 && position.x - radius > -1.0) {
             entered = true
         }
         if entered {
-            if position.x + radius > 1.0 || position.x - radius < -1.0 {
-                velocity.x = -velocity.x
+            if position.x - radius > 1.0 || position.x + radius < -1.0 {
+                exitHandler?(self)
             }
         }
-        position.x = position.x + velocity.x
-        position.y = position.y + velocity.y
+        var newPosition: (x: Float, y: Float) = (x: 0.0, y: 0.0)
+        if path == Path.loop {
+            newPosition.x = (position.x + (0.01 * Float(cos(GameModel.timePassed.magnitude)))) + velocity.x
+            newPosition.y = position.y + (0.01 * Float(sin(GameModel.timePassed.magnitude)))
+        } else {
+            newPosition.x = position.x + velocity.x
+            newPosition.y = position.y + velocity.y
+        }
+        newPosition.y = newPosition.y + radius > 1.0 ? 1.0 - radius : newPosition.y
+        newPosition.y = newPosition.y - radius < -1.0 ? -1.0 + radius : newPosition.y
+        position.x = newPosition.x
+        position.y = newPosition.y
+    }
+    
+    func setTimer(fireRate: Double) {
+        bulletTimer = Timer.scheduledTimer(withTimeInterval: fireRate, repeats: true, block: {
+            [weak self] timer in
+            self?.bulletHandler?((self!.fireBullet(playerPosition: GameModel.player!.position)))
+        })
     }
     
     //MARK: - Saving

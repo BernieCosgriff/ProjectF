@@ -15,7 +15,12 @@ class Player: Sprite, DestructableObject {
     private let bulletVelocity: (x: Float, y: Float) = (x: 0.0, y: 0.04)
     private let PLAYER_START: (x: Float, y: Float) = (x: 0.0, y: -0.45)
     private var lives = 5
-    var destructionHandler: ((_ object: DestructableObject, _ index: Int) -> Void)?
+    private var fireSprite: Fire?
+    private var timer: Timer?
+    private var timerCount = 0
+    var hittable = true
+    var display = true
+    var destructionHandler: ((_ object: DestructableObject) -> Void)?
     
     //MARK: - Initializers
     init() {
@@ -26,7 +31,7 @@ class Player: Sprite, DestructableObject {
         self.scale = GameModel.SHIP_SIZE
     }
     
-    required init(dict: NSMutableDictionary, index: Int) {
+    required init(dict: NSMutableDictionary) {
         super.init(image: UIImage(named: "Player")!)
         position = (x: dict.value(forKey: GameModel.POSITION_X) as! Float, y: dict.value(forKey: GameModel.POSITION_Y) as! Float)
         radius = dict.value(forKey: GameModel.RADIUS) as! Float
@@ -34,23 +39,66 @@ class Player: Sprite, DestructableObject {
     }
     
     //MARK: - Actions
-    func fireBullet(index: Int) -> Bullet {
+    func fireBullet() -> Bullet {
         var position = self.position
         position.y = position.y + radius
-        return PlayerBullet(position: position, velocity: bulletVelocity, image: laser, rotation: 0.0, index: index)
+        return PlayerBullet(position: position, velocity: bulletVelocity, image: laser, rotation: 0.0)
     }
     
-    func destruct() {
-        //TODO: Show Damage
+    func hit() {
         lives -= 1
+        hittable = false
+        display = false
+        timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true, block: {
+            [weak self] timer in
+            self?.display = !self!.display
+            self?.timerCount += 1
+            if(self?.timerCount == 7) {
+                self?.timerCount = 0
+                self?.hittable = true
+                self?.display = true
+                timer.invalidate()
+            }
+        })
         if lives == 0 {
-            destructionHandler?(self, 0)
+            destructionHandler?(self)
         }
     }
     
     func move() {
-        position.x = position.x + velocity.x
-        position.y = position.y + velocity.y
+        if position.x + radius + velocity.x < 1 && position.x - radius + velocity.x > -1 {
+            position.x = position.x + velocity.x
+            if let fire = fireSprite {
+                fire.position.x = fire.position.x + velocity.x
+            }
+        }
+        if position.y + radius + velocity.y < 1 && position.y - radius + velocity.y > -1 {
+            position.y = position.y + velocity.y
+            if let fire = fireSprite {
+                fire.position.y = fire.position.y + velocity.y
+            }
+        }
+    }
+    
+    var fire: Bool {
+        get {
+            return self.fireSprite != nil
+        }
+        set {
+            if newValue == true {
+                let firePos = (x: position.x, y: position.y - (radius * 1.7))
+                fireSprite = Fire(position: firePos)
+            } else {
+                self.fireSprite = nil
+            }
+        }
+    }
+    
+    override func draw() {
+        if display {
+            super.draw()
+            fireSprite?.draw()
+        }
     }
     
     //MARK: - Saving

@@ -44,9 +44,7 @@ class Sprite {
     
     init(image: UIImage) {
         self.image = image
-        
         self.texture = try! GLKTextureLoader.texture(with: image.cgImage!, options: nil)
-        
         Sprite.setup()
     }
     
@@ -141,12 +139,10 @@ class Sprite {
         
         //Texture
         glVertexAttribPointer(2, 4, GLenum(GL_FLOAT), GLboolean(GL_FALSE), 32, UnsafePointer(quad) + 2)
-        print("Setting up Sprite")
     }
     
     func draw() {
         glUseProgram(Sprite.program)
-        
         glBindTexture(GLenum(GL_TEXTURE_2D), texture!.name)
         glUniform2f(glGetUniformLocation(Sprite.program, "translate"), position.x, position.y)
         glUniform2f(glGetUniformLocation(Sprite.program, "scale"), scale.x, scale.y)
