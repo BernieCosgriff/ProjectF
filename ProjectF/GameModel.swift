@@ -27,7 +27,7 @@ protocol DestructableObject {
 class GameModel {
     
     //MARK: - Member Variables
-    var background: Background?
+    var background: ScrollingBackground!
     static var player: Player!
     var boss: Boss?
     var enemies = [Enemy]()
@@ -55,7 +55,7 @@ class GameModel {
     static let ENEMIES = "enemies"
     static let PLAYER_BULLETS = "playerBullets"
     static let ENEMY_BULLETS = "enemyBullets"
-    static let SHIP_SIZE: (x: Float, y: Float) = (x: 0.2,y: 0.2)
+    static let SHIP_SIZE: (x: Float, y: Float) = (x: 0.15,y: 0.15)
     
     //MARK: - Initializers
     init() {
@@ -64,10 +64,6 @@ class GameModel {
         var lives = 3
         
         if let dict = NSMutableDictionary(contentsOf: path) {
-            //Background
-            if let backgroundDict: NSMutableDictionary = dict.value(forKey: GameModel.BACKGROUND) as? NSMutableDictionary {
-                self.background = Background(dict: backgroundDict)
-            }
             //Player
             if let playerDict: NSMutableDictionary = dict.value(forKey: GameModel.PLAYER) as? NSMutableDictionary {
                 GameModel.player = Player(dict: playerDict)
@@ -93,7 +89,7 @@ class GameModel {
             lives = 4
         } else {
             GameModel.player = Player()
-            background = Background()
+            background = ScrollingBackground(level: 1)
             initLives(lives: lives)
         }
     }
@@ -109,7 +105,6 @@ class GameModel {
         if level == 1 {
             GameModel.timePassed += timeInterval.magnitude
             if(GameModel.timePassed >= 1 && spawnedEnemies == 0) {
-//                addEnemy(fireRate: 3, position: (x: -1.1, y: 0.8), path: Enemy.Path.loop, invert: false, boss: true)
                 addEnemy(fireRate: 2, position: (x: -1.1, y: 0.8), path: Enemy.Path.loop, invert: false, boss: false)
             } else if (GameModel.timePassed >= 3 && spawnedEnemies == 1) {
                 addEnemy(fireRate: 3, position: (x: 1.1, y: 0.6), path: Enemy.Path.zigzag, invert: true, boss: false)
@@ -145,6 +140,7 @@ class GameModel {
                 Timer.scheduledTimer(withTimeInterval: 2, repeats: false, block: {
                     [weak self] timer in
                     self?.debrisQueue.removeLast()
+                    self?.nextLevel()
                 })
                 self?.boss = nil
             }
@@ -260,6 +256,10 @@ class GameModel {
         return sqrt((xDist * xDist) + (yDist * yDist)) < radiusSum
     }
     
+    private func nextLevel() {
+        
+    }
+    
     private func gameLost() {
         
     }
@@ -320,7 +320,6 @@ class GameModel {
         let playerBulletArr = NSMutableArray()
         let enemyBulletArr = NSMutableArray()
         //TODO: player and background optionals
-        gameDict.setValue(background?.toDict(), forKey: GameModel.BACKGROUND)
         gameDict.setValue(GameModel.player?.toDict(), forKey: GameModel.PLAYER)
         for enemy in enemies {
             enemyArr.add(enemy.toDict())

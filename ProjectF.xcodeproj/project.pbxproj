@@ -30,6 +30,7 @@
 		A6A360991EA8284200B7AAB3 /* PlayerBullet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6A360981EA8284200B7AAB3 /* PlayerBullet.swift */; };
 		A6AEE36C1EAC011600A0F427 /* Attributions.txt in Resources */ = {isa = PBXBuildFile; fileRef = A6AEE36B1EAC011600A0F427 /* Attributions.txt */; };
 		A6AEE36E1EAEA95900A0F427 /* Boss.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6AEE36D1EAEA95900A0F427 /* Boss.swift */; };
+		A6AEE3701EAEE0B600A0F427 /* ScrollingBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6AEE36F1EAEE0B600A0F427 /* ScrollingBackground.swift */; };
 		A6F7C6401E984B4600CD89A8 /* sprite_fragment.glsl in Resources */ = {isa = PBXBuildFile; fileRef = A6F7C63E1E984B4600CD89A8 /* sprite_fragment.glsl */; };
 		A6F7C6411E984B4600CD89A8 /* sprite_vertex.glsl in Resources */ = {isa = PBXBuildFile; fileRef = A6F7C63F1E984B4600CD89A8 /* sprite_vertex.glsl */; };
 		A6F7C6431E985AC800CD89A8 /* Background.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6F7C6421E985AC800CD89A8 /* Background.swift */; };
@@ -61,6 +62,7 @@
 		A6A360981EA8284200B7AAB3 /* PlayerBullet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlayerBullet.swift; sourceTree = "<group>"; };
 		A6AEE36B1EAC011600A0F427 /* Attributions.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Attributions.txt; sourceTree = "<group>"; };
 		A6AEE36D1EAEA95900A0F427 /* Boss.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Boss.swift; sourceTree = "<group>"; };
+		A6AEE36F1EAEE0B600A0F427 /* ScrollingBackground.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScrollingBackground.swift; sourceTree = "<group>"; };
 		A6F7C63E1E984B4600CD89A8 /* sprite_fragment.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = sprite_fragment.glsl; sourceTree = "<group>"; };
 		A6F7C63F1E984B4600CD89A8 /* sprite_vertex.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = sprite_vertex.glsl; sourceTree = "<group>"; };
 		A6F7C6421E985AC800CD89A8 /* Background.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Background.swift; sourceTree = "<group>"; };
@@ -143,6 +145,7 @@
 				A69161371EAB34B200E95501 /* Number.swift */,
 				A69161391EAB375400E95501 /* Score.swift */,
 				A6AEE36D1EAEA95900A0F427 /* Boss.swift */,
+				A6AEE36F1EAEE0B600A0F427 /* ScrollingBackground.swift */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -237,6 +240,7 @@
 				A69161361EAADC7200E95501 /* PlayerLife.swift in Sources */,
 				A62687A91E917F8600118D29 /* Enemy.swift in Sources */,
 				A69161381EAB34B200E95501 /* Number.swift in Sources */,
+				A6AEE3701EAEE0B600A0F427 /* ScrollingBackground.swift in Sources */,
 				A6284FAA1E9840A8005D8A55 /* Sprite.swift in Sources */,
 				A6A360971EA8283600B7AAB3 /* EnemyBullet.swift in Sources */,
 				A6284F981E9190A7005D8A55 /* MenuView.swift in Sources */,

@@ -11,12 +11,12 @@ import UIKit
 class Background: Sprite {
     
     //MARK: - Initializers
-    init() {
+    init(image: UIImage, position: (x: Float, y: Float), velocity: (x: Float, y: Float)) {
         //TODO: Actual Image
-        super.init(image: UIImage(named: "Background")!)
-        self.position = (x: 0, y: 0)
-        self.velocity = (x: 0, y: 0)
-        self.scale = (x: 3.0, y: 2.0)
+        super.init(image: image)
+        self.position = position
+        self.velocity = velocity
+        self.scale = (x: 2.0, y: 2.0)
     }
     
     required init(dict: NSMutableDictionary) {
