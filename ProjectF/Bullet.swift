@@ -15,7 +15,6 @@ class Bullet: Sprite, DestructableObject {
     
     //MARK: - Initializers
     init(position: (x: Float, y: Float), velocity: (x: Float, y: Float), image: UIImage, rotation: Float) {
-        //TODO: Actual Image
         super.init(image: image)
         self.position = position
         self.velocity = velocity

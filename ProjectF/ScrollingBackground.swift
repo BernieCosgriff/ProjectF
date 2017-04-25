@@ -10,25 +10,53 @@ import UIKit
 
 class ScrollingBackground {
     
-    let b1: Background
-    let b2: Background
+    var b1: Background
+    var b2: Background
+    var transitionString = ""
+    var counter = 3
+    var levelUpHandler: (() -> Void)?
+    let backgroundVelocity: (x: Float, y: Float) = (x: 0, y: -0.05)
     
     init (level: Int) {
-        b1 = Background(image: UIImage(named: "Background1")!, position: (x: 0, y: 0), velocity: (x: 0, y: -0.01))
-        b2 = Background(image: UIImage(named: "Background1")!, position: (x: 0, y: 2.0), velocity: (x: 0, y: -0.01))
         if level == 1 {
-            
+            b1 = Background(image: UIImage(named: "Background1")!, position: (x: 0, y: 0), velocity: backgroundVelocity)
+            b2 = Background(image: UIImage(named: "Background1")!, position: (x: 0, y: 2.0), velocity: backgroundVelocity)
+        } else if level == 2 {
+            b1 = Background(image: UIImage(named: "Background2")!, position: (x: 0, y: 0), velocity: backgroundVelocity)
+            b2 = Background(image: UIImage(named: "Background2")!, position: (x: 0, y: 2.0), velocity: backgroundVelocity)
+        } else {
+            b1 = Background(image: UIImage(named: "Background3")!, position: (x: 0, y: 0), velocity: backgroundVelocity)
+            b2 = Background(image: UIImage(named: "Background3")!, position: (x: 0, y: 2.0), velocity: backgroundVelocity)
         }
     }
     
+    func setBackground(level: Int) {
+        transitionString = "Background\(level)"
+        counter = 0
+    }
+    
     func move() {
+        if counter == 2 {
+            levelUpHandler?()
+            counter += 1
+        }
         b1.move()
         if b1.position.y <= -2.0 {
-            b1.position.y = 2.0
+            if counter < 2 {
+                b1 = Background(image: UIImage(named: transitionString)!, position: (x: 0, y: 2.0), velocity: backgroundVelocity)
+                counter += 1
+            } else {
+                b1.position.y = 2.0
+            }
         }
         b2.move()
         if b2.position.y <= -2.0 {
-            b2.position.y = 2.0
+            if counter < 2 {
+                b2 = Background(image: UIImage(named: transitionString)!, position: (x: 0, y: 2.0), velocity: backgroundVelocity)
+                counter += 1
+            } else {
+                b2.position.y = 2.0
+            }
         }
     }
     

@@ -71,7 +71,6 @@ class Sprite {
             let logBuffer = UnsafeMutablePointer<GLchar>.allocate(capacity: Int(logLength))
             glGetShaderiv(vertexShader, GLenum(GL_INFO_LOG_LENGTH), &logLength)
             
-            //TODO: Why is 3rd param nil?
             glGetShaderInfoLog(vertexShader, logLength, nil, logBuffer)
             
             let logString = String(cString: logBuffer)

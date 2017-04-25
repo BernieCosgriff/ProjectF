@@ -60,7 +60,6 @@ class Enemy: Sprite, DestructableObject {
     
     //MARK: - Actions
     func fireBullet(playerPosition: (x: Float, y: Float)) -> EnemyBullet {
-        //TODO: Enemy Bullet Image
         let firingPosition = (x: position.x, y: position.y - radius)
         let v = (x: (playerPosition.x - position.x) * bulletVelocity.x, y: (playerPosition.y - position.y) * bulletVelocity.y)
         let rotation = atan2(v.x, v.y)

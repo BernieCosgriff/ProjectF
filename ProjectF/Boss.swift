@@ -21,7 +21,7 @@ class Boss: Enemy {
     
     init(position: (x: Float, y: Float), radius: Float, path: Path, invertX: Bool, lives: Int) {
         super.init(position: position, radius: radius, path: path, invertX: invertX)
-        for i in 1...intLives {
+        for i in 1...lives {
             numbers.append(Number(number: i))
         }
         lifeSprite = numbers.last!
@@ -36,7 +36,7 @@ class Boss: Enemy {
         }
         set {
             intLives = newValue
-            if(newValue > 0 && newValue <= 3) {
+            if(newValue > 0) {
                 let pos = lifeSprite.position
                 let v = lifeSprite.velocity
                 lifeSprite = numbers[newValue - 1]
@@ -47,7 +47,6 @@ class Boss: Enemy {
     }
     
     func hit() {
-        //TODO: Show Damage
         lives -= 1
         hittable = false
         display = false

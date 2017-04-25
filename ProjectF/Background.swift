@@ -12,7 +12,6 @@ class Background: Sprite {
     
     //MARK: - Initializers
     init(image: UIImage, position: (x: Float, y: Float), velocity: (x: Float, y: Float)) {
-        //TODO: Actual Image
         super.init(image: image)
         self.position = position
         self.velocity = velocity
