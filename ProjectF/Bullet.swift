@@ -24,16 +24,12 @@ class Bullet: Sprite, DestructableObject {
     required init(dict: NSMutableDictionary) {
         super.init(image: UIImage(named: "PlayerLaser")!)
         self.scale = (x: 0.03,y: 0.03)
-        position = (x: dict.value(forKey: GameModel.POSITION_X) as! Float, y: dict.value(forKey: GameModel.POSITION_Y) as! Float)
-        radius = dict.value(forKey: GameModel.RADIUS) as! Float
-        velocity = (x: dict.value(forKey: GameModel.VELOCITY_X) as! Float, y: dict.value(forKey: GameModel.VELOCITY_Y) as! Float)
+        self.position = (x: dict.value(forKey: GameModel.POSITION_X) as! Float, y: dict.value(forKey: GameModel.POSITION_Y) as! Float)
+        self.radius = dict.value(forKey: GameModel.RADIUS) as! Float
+        self.velocity = (x: dict.value(forKey: GameModel.VELOCITY_X) as! Float, y: dict.value(forKey: GameModel.VELOCITY_Y) as! Float)
     }
     
     //MARK: - Actions
-    func destruct() {
-//        destructionHandler?(self)
-    }
-    
     func move() {
         position.x = position.x + velocity.x
         position.y = position.y + velocity.y

@@ -36,6 +36,7 @@ class Player: Sprite, DestructableObject {
         position = (x: dict.value(forKey: GameModel.POSITION_X) as! Float, y: dict.value(forKey: GameModel.POSITION_Y) as! Float)
         radius = dict.value(forKey: GameModel.RADIUS) as! Float
         velocity = (x: dict.value(forKey: GameModel.VELOCITY_X) as! Float, y: dict.value(forKey: GameModel.VELOCITY_Y) as! Float)
+        scale = GameModel.SHIP_SIZE
     }
     
     //MARK: - Actions

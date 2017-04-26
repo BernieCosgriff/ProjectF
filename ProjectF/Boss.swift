@@ -19,8 +19,20 @@ class Boss: Enemy {
     var timerCount = 0
     var destructionHandler: ((_ object: DestructableObject) -> Void)?
     
-    init(position: (x: Float, y: Float), radius: Float, path: Path, invertX: Bool, lives: Int) {
-        super.init(position: position, radius: radius, path: path, invertX: invertX)
+    init(position: (x: Float, y: Float), radius: Float, path: Path, lives: Int) {
+        super.init(position: position, radius: radius, path: path)
+        for i in 1...lives {
+            numbers.append(Number(number: i))
+        }
+        lifeSprite = numbers.last!
+        lifeSprite.position = (x: position.x, y: position.y + radius + 0.01)
+        lifeSprite.velocity = velocity
+        self.lives = lives
+    }
+    
+    required init(dict: NSMutableDictionary) {
+        super.init(dict: dict)
+        let lives = dict.value(forKey: GameModel.LIVES) as! Int
         for i in 1...lives {
             numbers.append(Number(number: i))
         }
@@ -64,10 +76,6 @@ class Boss: Enemy {
         if lives == 0 {
             destructionHandler?(self)
         }
-    }
-    
-    required init(dict: NSMutableDictionary) {
-        super.init(dict: dict)
     }
     
     override func move() {
@@ -123,5 +131,11 @@ class Boss: Enemy {
             super.draw()
             lifeSprite.draw()
         }
+    }
+    
+    override func toDict() -> NSMutableDictionary {
+        let dict = super.toDict()
+        dict.setValue(intLives, forKey: GameModel.LIVES)
+        return dict
     }
 }

@@ -14,29 +14,39 @@ class Enemy: Sprite, DestructableObject {
     let laser = UIImage(named: "EnemyLaser")!
     let bulletVelocity: (x: Float, y: Float) = (x: 0.02, y: 0.02)
     var entered = false
-    var index: Int = 0
     var bulletHandler: ((_ bullet: EnemyBullet) -> Void)?
     var bulletTimer: Timer?
     var exitHandler: ((_ sender: Enemy) -> Void)?
     var path: Path = Path.standard
     let shipVelocity: (x: Float, y: Float) = (x: 0.01, y: 0.0)
-    var center: (x: Float, y: Float)!
-    var inverted = false
     
-    enum Path {
-        case standard
-        case zigzag
-        case loop
+    enum Path: Int {
+        case standard = 0
+        case zigzag = 1
+        case loop = 2
     }
     
     //MARK: - Initializers
-    init(position: (x: Float, y: Float), radius: Float, path: Path, invertX: Bool) {
+    init(position: (x: Float, y: Float), radius: Float, path: Path) {
         super.init(image: UIImage(named: "Enemy")!)
         self.position = position
         self.radius = radius
         self.velocity = shipVelocity
-        if invertX {
-            inverted = true
+        self.path = path
+        initRest()
+    }
+    
+    required init(dict: NSMutableDictionary) {
+        super.init(image: UIImage(named: "Enemy")!)
+        position = (x: dict.value(forKey: GameModel.POSITION_X) as! Float, y: dict.value(forKey: GameModel.POSITION_Y) as! Float)
+        radius = dict.value(forKey: GameModel.RADIUS) as! Float
+        velocity = (x: dict.value(forKey: GameModel.VELOCITY_X) as! Float, y: dict.value(forKey: GameModel.VELOCITY_Y) as! Float)
+        path = Path(rawValue: dict.value(forKey: GameModel.PATH) as! Int)!
+        initRest()
+    }
+    
+    func initRest() {
+        if position.x > 0 {
             velocity.x = -velocity.x
         }
         if path == Path.zigzag {
@@ -46,16 +56,7 @@ class Enemy: Sprite, DestructableObject {
                 self?.velocity.y = -self!.velocity.y
             })
         }
-        self.scale = GameModel.SHIP_SIZE
-        self.path = path
-        center = position
-    }
-    
-    required init(dict: NSMutableDictionary) {
-        super.init(image: UIImage(named: "Enemy")!)
-        position = (x: dict.value(forKey: GameModel.POSITION_X) as! Float, y: dict.value(forKey: GameModel.POSITION_Y) as! Float)
-        radius = dict.value(forKey: GameModel.RADIUS) as! Float
-        velocity = (x: dict.value(forKey: GameModel.VELOCITY_X) as! Float, y: dict.value(forKey: GameModel.VELOCITY_Y) as! Float)
+        scale = GameModel.SHIP_SIZE
     }
     
     //MARK: - Actions
@@ -64,12 +65,6 @@ class Enemy: Sprite, DestructableObject {
         let v = (x: (playerPosition.x - position.x) * bulletVelocity.x, y: (playerPosition.y - position.y) * bulletVelocity.y)
         let rotation = atan2(v.x, v.y)
         return EnemyBullet(position: firingPosition, velocity: v, image: laser, rotation: rotation)
-    }
-    
-    func destruct() {
-        image = UIImage(named: "EnemyDamage")!
-        radius = 0
-        //        destructionHandler?(self)
     }
     
     func move() {
@@ -110,6 +105,7 @@ class Enemy: Sprite, DestructableObject {
         dict.setValue(position.y, forKey: GameModel.POSITION_Y)
         dict.setValue(velocity.x, forKey: GameModel.VELOCITY_X)
         dict.setValue(velocity.y, forKey: GameModel.VELOCITY_Y)
+        dict.setValue(path.rawValue, forKey: GameModel.PATH)
         return dict
     }
 }

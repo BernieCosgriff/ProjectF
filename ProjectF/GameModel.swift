@@ -25,9 +25,10 @@ class GameModel {
     var enemyBullets = [Bullet]()
     var debrisQueue = [Debris]()
     var livesArr = [PlayerLife]()
-    var score: Score
+    var lives = 3
+    var score = Score()
     var spawnedEnemies = 0
-    var levelInt = 3
+    var levelInt = 1
     let playerVelocityX: Float = 0.05
     let playerVelocityY: Float = 0.025
     static var timePassed: Double = 0.0
@@ -52,50 +53,77 @@ class GameModel {
     static let RADIUS = "radius"
     static let VELOCITY_X = "velocityX"
     static let VELOCITY_Y = "velocityY"
+    static let PATH = "path"
     static let BACKGROUND = "background"
     static let PLAYER = "player"
     static let ENEMIES = "enemies"
     static let PLAYER_BULLETS = "playerBullets"
     static let ENEMY_BULLETS = "enemyBullets"
+    static let LEVEL = "level"
+    static let BOSS = "boss"
+    static let LIVES = "lives"
+    static let SCORE = "score"
+    static let SPAWNED_ENEMIES = "spawnedEnemies"
+    static let TIME_PASSED = "timePassed"
     static let SHIP_SIZE: (x: Float, y: Float) = (x: 0.15,y: 0.15)
     
     //MARK: - Initializers
     init() {
-        score = Score()
         let path = getPath()
-        var lives = 3
-        
         if let dict = NSMutableDictionary(contentsOf: path) {
             //Player
-            if let playerDict: NSMutableDictionary = dict.value(forKey: GameModel.PLAYER) as? NSMutableDictionary {
+            if let playerDict = dict.value(forKey: GameModel.PLAYER) as? NSMutableDictionary {
                 GameModel.player = Player(dict: playerDict)
             }
             //Enemies
-            if let enemiesArr: [NSMutableDictionary] = dict.value(forKey: GameModel.ENEMIES) as? [NSMutableDictionary] {
+            if let enemiesArr = dict.value(forKey: GameModel.ENEMIES) as? [NSMutableDictionary] {
                 for enemy in enemiesArr {
                     enemies.append(Enemy(dict: enemy))
                 }
             }
             //Enemy Bullets
-            if let bulletsArr: [NSMutableDictionary] = dict.value(forKey: GameModel.ENEMY_BULLETS) as? [NSMutableDictionary] {
+            if let bulletsArr = dict.value(forKey: GameModel.ENEMY_BULLETS) as? [NSMutableDictionary] {
                 for bullet in bulletsArr {
                     enemyBullets.append(EnemyBullet(dict: bullet))
                 }
             }
             //Player Bullets
-            if let bulletsArr: [NSMutableDictionary] = dict.value(forKey: GameModel.PLAYER_BULLETS) as? [NSMutableDictionary] {
+            if let bulletsArr = dict.value(forKey: GameModel.PLAYER_BULLETS) as? [NSMutableDictionary] {
                 for bullet in bulletsArr {
                     playerBullets.append(PlayerBullet(dict: bullet))
                 }
             }
-            lives = 4
-        } else {
-            GameModel.player = Player()
-            background = ScrollingBackground(level: levelInt)
-            background.levelUpHandler = nextLevel
-            for i in 0...lives - 1 {
-                livesArr.append(PlayerLife(position: (x: -0.93 + (Float(i)*0.2), y: 0.88)))
+            //Boss
+            if let bossDict = dict.value(forKey: GameModel.BOSS) as? NSMutableDictionary {
+                self.boss = Boss(dict: bossDict)
             }
+            //Lives
+            if let lives = dict.value(forKey: GameModel.LIVES) as? Int {
+                self.lives = lives
+            }
+            //Level
+            if let level = dict.value(forKey: GameModel.LEVEL) as? Int {
+                self.levelInt = level
+            }
+            //Score
+            if let score = dict.value(forKey: GameModel.SCORE) as? Int {
+                self.score.score = score
+            }
+            //Spawned Enemies
+            if let spawnedEnemies = dict.value(forKey: GameModel.SPAWNED_ENEMIES) as? Int {
+                self.spawnedEnemies = spawnedEnemies
+            }
+            //Time Passed
+            if let timePassed = dict.value(forKey: GameModel.TIME_PASSED) as? Double {
+                GameModel.timePassed = timePassed
+            }
+         } else {
+            GameModel.player = Player()
+        }
+        background = ScrollingBackground(level: levelInt)
+        background.levelUpHandler = nextLevel
+        for i in 0...lives - 1 {
+            livesArr.append(PlayerLife(position: (x: -0.93 + (Float(i)*0.2), y: 0.88)))
         }
     }
     
@@ -104,85 +132,85 @@ class GameModel {
         GameModel.timePassed += timeInterval.magnitude
         if level == 1 {
             if(GameModel.timePassed >= 1 && spawnedEnemies == 0) {
-                addEnemy(fireRate: 2, position: (x: -1.1, y: 0.8), path: Enemy.Path.standard, invert: false, bossLives: 0)
+                addEnemy(fireRate: 2, position: (x: -1.1, y: 0.8), path: Enemy.Path.standard, bossLives: 0)
             } else if (GameModel.timePassed >= 3 && spawnedEnemies == 1) {
-                addEnemy(fireRate: 3, position: (x: 1.1, y: 0.6), path: Enemy.Path.zigzag, invert: true, bossLives: 0)
+                addEnemy(fireRate: 3, position: (x: 1.1, y: 0.6), path: Enemy.Path.zigzag, bossLives: 0)
             } else if(GameModel.timePassed >= 5 && spawnedEnemies == 2) {
-                addEnemy(fireRate: 0, position: (x: -1.1, y: 0.7), path: Enemy.Path.loop, invert: false, bossLives: 0)
+                addEnemy(fireRate: 0, position: (x: -1.1, y: 0.7), path: Enemy.Path.loop, bossLives: 0)
             } else if(GameModel.timePassed >= 6 && spawnedEnemies == 3) {
-                addEnemy(fireRate: 3, position: (x: -1.1, y: 0.5), path: Enemy.Path.zigzag, invert: false, bossLives: 0)
+                addEnemy(fireRate: 3, position: (x: -1.1, y: 0.5), path: Enemy.Path.zigzag, bossLives: 0)
             } else if(GameModel.timePassed >= 10 && spawnedEnemies == 4) {
-                addEnemy(fireRate: 2, position: (x: -1.1, y: 0.7), path: Enemy.Path.loop, invert: false, bossLives: 0)
+                addEnemy(fireRate: 2, position: (x: -1.1, y: 0.7), path: Enemy.Path.loop, bossLives: 0)
             } else if(GameModel.timePassed >= 12 && spawnedEnemies == 5) {
-                addEnemy(fireRate: 3, position: (x: 1.1, y: 0.4), path: Enemy.Path.standard, invert: true, bossLives: 0)
+                addEnemy(fireRate: 3, position: (x: 1.1, y: 0.4), path: Enemy.Path.standard, bossLives: 0)
             } else if(GameModel.timePassed >= 16 && spawnedEnemies == 6) {
-                addEnemy(fireRate: 0, position: (x: -1.1, y: 0), path: Enemy.Path.standard, invert: false, bossLives: 0)
+                addEnemy(fireRate: 0, position: (x: -1.1, y: 0), path: Enemy.Path.standard, bossLives: 0)
             } else if(GameModel.timePassed >= 20 && spawnedEnemies == 7) {
-                addEnemy(fireRate: 2, position: (x: -1.1, y: 0.7), path: Enemy.Path.zigzag, invert: false, bossLives: 0)
+                addEnemy(fireRate: 2, position: (x: -1.1, y: 0.7), path: Enemy.Path.zigzag, bossLives: 0)
             } else if(GameModel.timePassed >= 20 && spawnedEnemies == 8) {
-                addEnemy(fireRate: 2, position: (x: 1.1, y: 0.5), path: Enemy.Path.zigzag, invert: true, bossLives: 0)
+                addEnemy(fireRate: 2, position: (x: 1.1, y: 0.5), path: Enemy.Path.zigzag, bossLives: 0)
             } else if(GameModel.timePassed >= 25 && spawnedEnemies == 9) {
-                addEnemy(fireRate: 3, position: (x: 1.1, y: 0.5), path: Enemy.Path.standard, invert: true, bossLives: 3)
+                addEnemy(fireRate: 3, position: (x: 1.1, y: 0.5), path: Enemy.Path.standard, bossLives: 3)
             }
         } else if level == 2 {
             if(GameModel.timePassed >= 1 && spawnedEnemies == 0) {
-                addEnemy(fireRate: 3, position: (x: -1.1, y: 0.8), path: Enemy.Path.standard, invert: false, bossLives: 0)
-                addEnemy(fireRate: 3, position: (x: 1.1, y: 0.6), path: Enemy.Path.standard, invert: true, bossLives: 0)
+                addEnemy(fireRate: 3, position: (x: -1.1, y: 0.8), path: Enemy.Path.standard, bossLives: 0)
+                addEnemy(fireRate: 3, position: (x: 1.1, y: 0.6), path: Enemy.Path.standard, bossLives: 0)
             } else if (GameModel.timePassed >= 5 && spawnedEnemies == 2) {
-                addEnemy(fireRate: 2, position: (x: 1.1, y: 0.6), path: Enemy.Path.standard, invert: true, bossLives: 0)
-                addEnemy(fireRate: 2, position: (x: 1.1, y: 0), path: Enemy.Path.zigzag, invert: true, bossLives: 0)
+                addEnemy(fireRate: 2, position: (x: 1.1, y: 0.6), path: Enemy.Path.standard, bossLives: 0)
+                addEnemy(fireRate: 2, position: (x: 1.1, y: 0), path: Enemy.Path.zigzag, bossLives: 0)
             } else if(GameModel.timePassed >= 10 && spawnedEnemies == 4) {
-                addEnemy(fireRate: 0, position: (x: -1.1, y: 0.8), path: Enemy.Path.standard, invert: false, bossLives: 0)
-                addEnemy(fireRate: 1, position: (x: 1.1, y: 0.5), path: Enemy.Path.loop, invert: true, bossLives: 0)
+                addEnemy(fireRate: 0, position: (x: -1.1, y: 0.8), path: Enemy.Path.standard, bossLives: 0)
+                addEnemy(fireRate: 1, position: (x: 1.1, y: 0.5), path: Enemy.Path.loop, bossLives: 0)
             } else if(GameModel.timePassed >= 15 && spawnedEnemies == 6) {
-                addEnemy(fireRate: 0, position: (x: 1.1, y: 0.0), path: Enemy.Path.standard, invert: true, bossLives: 0)
-                addEnemy(fireRate: 1, position: (x: 1.1, y: 0.5), path: Enemy.Path.loop, invert: true, bossLives: 0)
-                addEnemy(fireRate: 0, position: (x: -1.1, y: 0.3), path: Enemy.Path.standard, invert: false, bossLives: 0)
+                addEnemy(fireRate: 0, position: (x: 1.1, y: 0.0), path: Enemy.Path.standard, bossLives: 0)
+                addEnemy(fireRate: 1, position: (x: 1.1, y: 0.5), path: Enemy.Path.loop, bossLives: 0)
+                addEnemy(fireRate: 0, position: (x: -1.1, y: 0.3), path: Enemy.Path.standard, bossLives: 0)
             } else if(GameModel.timePassed >= 20 && spawnedEnemies == 9) {
-                addEnemy(fireRate: 2, position: (x: -1.1, y: 0.8), path: Enemy.Path.zigzag, invert: false, bossLives: 0)
-                addEnemy(fireRate: 2, position: (x: 1.1, y: 0.1), path: Enemy.Path.zigzag, invert: true, bossLives: 0)
+                addEnemy(fireRate: 2, position: (x: -1.1, y: 0.8), path: Enemy.Path.zigzag, bossLives: 0)
+                addEnemy(fireRate: 2, position: (x: 1.1, y: 0.1), path: Enemy.Path.zigzag, bossLives: 0)
             } else if(GameModel.timePassed >= 25 && spawnedEnemies == 11) {
-                addEnemy(fireRate: 1, position: (x: -1.1, y: 0.8), path: Enemy.Path.loop, invert: false, bossLives: 0)
-                addEnemy(fireRate: 1, position: (x: 1.1, y: 0.1), path: Enemy.Path.loop, invert: true, bossLives: 0)
+                addEnemy(fireRate: 1, position: (x: -1.1, y: 0.8), path: Enemy.Path.loop, bossLives: 0)
+                addEnemy(fireRate: 1, position: (x: 1.1, y: 0.1), path: Enemy.Path.loop, bossLives: 0)
             } else if(GameModel.timePassed >= 30 && spawnedEnemies == 13) {
-                addEnemy(fireRate: 1, position: (x: -1.1, y: 0.7), path: Enemy.Path.zigzag, invert: false, bossLives: 0)
+                addEnemy(fireRate: 1, position: (x: -1.1, y: 0.7), path: Enemy.Path.zigzag, bossLives: 0)
             } else if(GameModel.timePassed >= 35 && spawnedEnemies == 14) {
-                addEnemy(fireRate: 1, position: (x: 1.1, y: 0.8), path: Enemy.Path.zigzag, invert: true, bossLives: 4)
+                addEnemy(fireRate: 1, position: (x: 1.1, y: 0.6), path: Enemy.Path.zigzag, bossLives: 4)
             }
         } else if level == 3 {
             if(GameModel.timePassed >= 3 && spawnedEnemies == 0) {
-                addEnemy(fireRate: 1, position: (x: -1.1, y: 0.8), path: Enemy.Path.loop, invert: false, bossLives: 0)
+                addEnemy(fireRate: 1, position: (x: -1.1, y: 0.8), path: Enemy.Path.loop, bossLives: 0)
             } else if (GameModel.timePassed >= 5 && spawnedEnemies == 1) {
-                addEnemy(fireRate: 3, position: (x: 1.1, y: 0.6), path: Enemy.Path.zigzag, invert: true, bossLives: 0)
-                addEnemy(fireRate: 3, position: (x: -1.1, y: 0.3), path: Enemy.Path.zigzag, invert: false, bossLives: 0)
+                addEnemy(fireRate: 3, position: (x: 1.1, y: 0.6), path: Enemy.Path.zigzag, bossLives: 0)
+                addEnemy(fireRate: 3, position: (x: -1.1, y: 0.3), path: Enemy.Path.zigzag, bossLives: 0)
             } else if (GameModel.timePassed >= 10 && spawnedEnemies == 3) {
-                addEnemy(fireRate: 3, position: (x: 1.1, y: 0.6), path: Enemy.Path.zigzag, invert: true, bossLives: 0)
-                addEnemy(fireRate: 3, position: (x: 1.1, y: 0.3), path: Enemy.Path.zigzag, invert: true, bossLives: 0)
+                addEnemy(fireRate: 3, position: (x: 1.1, y: 0.6), path: Enemy.Path.zigzag, bossLives: 0)
+                addEnemy(fireRate: 3, position: (x: 1.1, y: 0.3), path: Enemy.Path.zigzag, bossLives: 0)
             } else if (GameModel.timePassed >= 12 && spawnedEnemies == 5) {
-                addEnemy(fireRate: 3, position: (x: -1.1, y: 0.6), path: Enemy.Path.standard, invert: false, bossLives: 0)
-                addEnemy(fireRate: 3, position: (x: -1.1, y: 0.3), path: Enemy.Path.standard, invert: false, bossLives: 0)
+                addEnemy(fireRate: 3, position: (x: -1.1, y: 0.6), path: Enemy.Path.standard, bossLives: 0)
+                addEnemy(fireRate: 3, position: (x: -1.1, y: 0.3), path: Enemy.Path.standard, bossLives: 0)
             } else if (GameModel.timePassed >= 15 && spawnedEnemies == 7) {
-                addEnemy(fireRate: 2, position: (x: 1.1, y: 0.8), path: Enemy.Path.zigzag, invert: true, bossLives: 0)
-                addEnemy(fireRate: 2, position: (x: 1.1, y: 0.7), path: Enemy.Path.zigzag, invert: true, bossLives: 0)
+                addEnemy(fireRate: 2, position: (x: 1.1, y: 0.8), path: Enemy.Path.zigzag, bossLives: 0)
+                addEnemy(fireRate: 2, position: (x: 1.1, y: 0.7), path: Enemy.Path.zigzag, bossLives: 0)
             } else if (GameModel.timePassed >= 16 && spawnedEnemies == 9) {
-                addEnemy(fireRate: 2, position: (x: 1.1, y: 0.6), path: Enemy.Path.zigzag, invert: true, bossLives: 0)
-                addEnemy(fireRate: 2, position: (x: 1.1, y: 0.5), path: Enemy.Path.zigzag, invert: true, bossLives: 0)
+                addEnemy(fireRate: 2, position: (x: 1.1, y: 0.6), path: Enemy.Path.zigzag, bossLives: 0)
+                addEnemy(fireRate: 2, position: (x: 1.1, y: 0.5), path: Enemy.Path.zigzag, bossLives: 0)
             } else if (GameModel.timePassed >= 17 && spawnedEnemies == 11) {
-                addEnemy(fireRate: 2, position: (x: 1.1, y: 0.4), path: Enemy.Path.zigzag, invert: true, bossLives: 0)
-                addEnemy(fireRate: 2, position: (x: 1.1, y: 0.3), path: Enemy.Path.zigzag, invert: true, bossLives: 0)
+                addEnemy(fireRate: 2, position: (x: 1.1, y: 0.4), path: Enemy.Path.zigzag, bossLives: 0)
+                addEnemy(fireRate: 2, position: (x: 1.1, y: 0.3), path: Enemy.Path.zigzag, bossLives: 0)
             } else if (GameModel.timePassed >= 20 && spawnedEnemies == 13) {
-                addEnemy(fireRate: 3, position: (x: -1.1, y: 0.8), path: Enemy.Path.loop, invert: false, bossLives: 0)
-                addEnemy(fireRate: 3, position: (x: -1.1, y: 0.7), path: Enemy.Path.loop, invert: false, bossLives: 0)
+                addEnemy(fireRate: 3, position: (x: -1.1, y: 0.8), path: Enemy.Path.loop, bossLives: 0)
+                addEnemy(fireRate: 3, position: (x: -1.1, y: 0.7), path: Enemy.Path.loop, bossLives: 0)
             } else if (GameModel.timePassed >= 21 && spawnedEnemies == 15) {
-                addEnemy(fireRate: 3, position: (x: -1.1, y: 0.6), path: Enemy.Path.loop, invert: false, bossLives: 0)
-                addEnemy(fireRate: 3, position: (x: -1.1, y: 0.5), path: Enemy.Path.loop, invert: false, bossLives: 0)
+                addEnemy(fireRate: 3, position: (x: -1.1, y: 0.6), path: Enemy.Path.loop, bossLives: 0)
+                addEnemy(fireRate: 3, position: (x: -1.1, y: 0.5), path: Enemy.Path.loop, bossLives: 0)
             } else if (GameModel.timePassed >= 22 && spawnedEnemies == 17) {
-                addEnemy(fireRate: 3, position: (x: -1.1, y: 0.4), path: Enemy.Path.loop, invert: false, bossLives: 0)
-                addEnemy(fireRate: 3, position: (x: -1.1, y: 0.3), path: Enemy.Path.loop, invert: false, bossLives: 0)
+                addEnemy(fireRate: 3, position: (x: -1.1, y: 0.4), path: Enemy.Path.loop, bossLives: 0)
+                addEnemy(fireRate: 3, position: (x: -1.1, y: 0.3), path: Enemy.Path.loop, bossLives: 0)
             } else if (GameModel.timePassed >= 25 && spawnedEnemies == 19) {
-                addEnemy(fireRate: 3, position: (x: 1.1, y: 0.8), path: Enemy.Path.standard, invert: true, bossLives: 0)
+                addEnemy(fireRate: 3, position: (x: 1.1, y: 0.8), path: Enemy.Path.standard, bossLives: 0)
             } else if (GameModel.timePassed >= 30 && spawnedEnemies == 20) {
-                addEnemy(fireRate: 0.7, position: (x: 1.1, y: 0.6), path: Enemy.Path.loop, invert: true, bossLives: 5)
+                addEnemy(fireRate: 0.7, position: (x: 1.1, y: 0.6), path: Enemy.Path.loop, bossLives: 5)
             }
         } else {
             gameOver()
@@ -191,11 +219,11 @@ class GameModel {
         move()
     }
     
-    private func addEnemy(fireRate: Double, position: (x: Float, y: Float), path: Enemy.Path, invert: Bool, bossLives: Int) {
+    private func addEnemy(fireRate: Double, position: (x: Float, y: Float), path: Enemy.Path, bossLives: Int) {
         spawnedEnemies += 1
         var newEnemy: Enemy!
         if bossLives > 0 {
-            self.boss = Boss(position: position, radius: 0.1, path: path, invertX: invert, lives: bossLives)
+            self.boss = Boss(position: position, radius: 0.1, path: path, lives: bossLives)
             if fireRate > 0 {
                 self.boss!.setTimer(fireRate: fireRate)
                 self.boss!.bulletHandler = {
@@ -215,7 +243,7 @@ class GameModel {
                 self?.boss = nil
             }
         } else {
-            newEnemy = Enemy(position: position, radius: 0.1, path: path, invertX: invert)
+            newEnemy = Enemy(position: position, radius: 0.1, path: path)
             enemies.append(newEnemy)
             if fireRate > 0 {
                 newEnemy.setTimer(fireRate: fireRate)
@@ -390,22 +418,30 @@ class GameModel {
         let enemyArr = NSMutableArray()
         let playerBulletArr = NSMutableArray()
         let enemyBulletArr = NSMutableArray()
-        //TODO: player and background optionals
-        gameDict.setValue(GameModel.player?.toDict(), forKey: GameModel.PLAYER)
+        
         for enemy in enemies {
             enemyArr.add(enemy.toDict())
         }
-        gameDict.setValue(enemyArr, forKey: GameModel.ENEMIES)
         for bullet in playerBullets {
             playerBulletArr.add(bullet.toDict())
         }
         for bullet in enemyBullets {
             enemyBulletArr.add(bullet.toDict())
         }
+        
+        if let boss = boss {
+            gameDict.setValue(boss.toDict(), forKey: GameModel.BOSS)
+        }
+        gameDict.setValue(enemyArr, forKey: GameModel.ENEMIES)
         gameDict.setValue(playerBulletArr, forKey: GameModel.PLAYER_BULLETS)
         gameDict.setValue(enemyBulletArr, forKey: GameModel.ENEMY_BULLETS)
-        let path = getPath()
-        gameDict.write(to: path, atomically: true)
+        gameDict.setValue(GameModel.player.toDict(), forKey: GameModel.PLAYER)
+        gameDict.setValue(lives, forKey: GameModel.LIVES)
+        gameDict.setValue(levelInt, forKey: GameModel.LEVEL)
+        gameDict.setValue(score.score, forKey: GameModel.SCORE)
+        gameDict.setValue(spawnedEnemies, forKey: GameModel.SPAWNED_ENEMIES)
+        gameDict.setValue(GameModel.timePassed, forKey: GameModel.TIME_PASSED)
+        gameDict.write(to: getPath(), atomically: true)
     }
     
     private func getPath() -> URL {

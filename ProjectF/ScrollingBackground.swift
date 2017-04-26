@@ -18,16 +18,8 @@ class ScrollingBackground {
     let backgroundVelocity: (x: Float, y: Float) = (x: 0, y: -0.05)
     
     init (level: Int) {
-        if level == 1 {
-            b1 = Background(image: UIImage(named: "Background1")!, position: (x: 0, y: 0), velocity: backgroundVelocity)
-            b2 = Background(image: UIImage(named: "Background1")!, position: (x: 0, y: 2.0), velocity: backgroundVelocity)
-        } else if level == 2 {
-            b1 = Background(image: UIImage(named: "Background2")!, position: (x: 0, y: 0), velocity: backgroundVelocity)
-            b2 = Background(image: UIImage(named: "Background2")!, position: (x: 0, y: 2.0), velocity: backgroundVelocity)
-        } else {
-            b1 = Background(image: UIImage(named: "Background3")!, position: (x: 0, y: 0), velocity: backgroundVelocity)
-            b2 = Background(image: UIImage(named: "Background3")!, position: (x: 0, y: 2.0), velocity: backgroundVelocity)
-        }
+        b1 = Background(image: UIImage(named: "Background\(level)")!, position: (x: 0, y: 0), velocity: backgroundVelocity)
+        b2 = Background(image: UIImage(named: "Background\(level)")!, position: (x: 0, y: 2.0), velocity: backgroundVelocity)
     }
     
     func setBackground(level: Int) {
