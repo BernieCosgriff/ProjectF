@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		A618ADCE1EA1A766002DB4A6 /* ShipControlSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A618ADCD1EA1A766002DB4A6 /* ShipControlSet.swift */; };
 		A618ADD01EA1A913002DB4A6 /* ShipControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = A618ADCF1EA1A913002DB4A6 /* ShipControl.swift */; };
+		A61A7FDF1EB3022600C2C513 /* PauseModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = A61A7FDE1EB3022600C2C513 /* PauseModal.swift */; };
 		A62687951E90741100118D29 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A62687941E90741100118D29 /* AppDelegate.swift */; };
 		A626879A1E90741100118D29 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A62687981E90741100118D29 /* Main.storyboard */; };
 		A626879C1E90741100118D29 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A626879B1E90741100118D29 /* Assets.xcassets */; };
@@ -39,6 +40,7 @@
 /* Begin PBXFileReference section */
 		A618ADCD1EA1A766002DB4A6 /* ShipControlSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShipControlSet.swift; sourceTree = "<group>"; };
 		A618ADCF1EA1A913002DB4A6 /* ShipControl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShipControl.swift; sourceTree = "<group>"; };
+		A61A7FDE1EB3022600C2C513 /* PauseModal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PauseModal.swift; sourceTree = "<group>"; };
 		A62687911E90741100118D29 /* ProjectF.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ProjectF.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A62687941E90741100118D29 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A62687991E90741100118D29 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -115,6 +117,7 @@
 				A62687981E90741100118D29 /* Main.storyboard */,
 				A626879D1E90741100118D29 /* LaunchScreen.storyboard */,
 				A6284F971E9190A7005D8A55 /* MenuView.swift */,
+				A61A7FDE1EB3022600C2C513 /* PauseModal.swift */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -245,6 +248,7 @@
 				A6A360971EA8283600B7AAB3 /* EnemyBullet.swift in Sources */,
 				A6284F981E9190A7005D8A55 /* MenuView.swift in Sources */,
 				A6A360991EA8284200B7AAB3 /* PlayerBullet.swift in Sources */,
+				A61A7FDF1EB3022600C2C513 /* PauseModal.swift in Sources */,
 				A62687951E90741100118D29 /* AppDelegate.swift in Sources */,
 				A6AEE36E1EAEA95900A0F427 /* Boss.swift in Sources */,
 				A618ADCE1EA1A766002DB4A6 /* ShipControlSet.swift in Sources */,

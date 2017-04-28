@@ -31,6 +31,7 @@ class GameModel {
     var levelInt = 1
     let playerVelocityX: Float = 0.05
     let playerVelocityY: Float = 0.025
+    var paused = false
     static var timePassed: Double = 0.0
     
     var level: Int {
@@ -65,11 +66,12 @@ class GameModel {
     static let SCORE = "score"
     static let SPAWNED_ENEMIES = "spawnedEnemies"
     static let TIME_PASSED = "timePassed"
+    static let FIRE_RATE = "fireRate"
+    static let ENTERED = "entered"
     static let SHIP_SIZE: (x: Float, y: Float) = (x: 0.15,y: 0.15)
     
     //MARK: - Initializers
     init() {
-        let path = getPath()
         if let dict = NSMutableDictionary(contentsOf: path) {
             //Player
             if let playerDict = dict.value(forKey: GameModel.PLAYER) as? NSMutableDictionary {
@@ -78,24 +80,29 @@ class GameModel {
             //Enemies
             if let enemiesArr = dict.value(forKey: GameModel.ENEMIES) as? [NSMutableDictionary] {
                 for enemy in enemiesArr {
-                    enemies.append(Enemy(dict: enemy))
+                    let e = Enemy(dict: enemy)
+                    e.bulletHandler = bulletHandler(bullet:)
+                    e.exitHandler = exitHandler(enemy:)
+                    enemies.append(e)
                 }
             }
             //Enemy Bullets
             if let bulletsArr = dict.value(forKey: GameModel.ENEMY_BULLETS) as? [NSMutableDictionary] {
                 for bullet in bulletsArr {
-                    enemyBullets.append(EnemyBullet(dict: bullet))
+                    enemyBullets.append(EnemyBullet(dict: bullet, playerBullet: false))
                 }
             }
             //Player Bullets
             if let bulletsArr = dict.value(forKey: GameModel.PLAYER_BULLETS) as? [NSMutableDictionary] {
                 for bullet in bulletsArr {
-                    playerBullets.append(PlayerBullet(dict: bullet))
+                    playerBullets.append(PlayerBullet(dict: bullet, playerBullet: true))
                 }
             }
             //Boss
             if let bossDict = dict.value(forKey: GameModel.BOSS) as? NSMutableDictionary {
                 self.boss = Boss(dict: bossDict)
+                self.boss?.destructionHandler = bossDestructionHandler(boss:)
+                self.boss?.bulletHandler = bulletHandler(bullet:)
             }
             //Lives
             if let lives = dict.value(forKey: GameModel.LIVES) as? Int {
@@ -226,39 +233,43 @@ class GameModel {
             self.boss = Boss(position: position, radius: 0.1, path: path, lives: bossLives)
             if fireRate > 0 {
                 self.boss!.setTimer(fireRate: fireRate)
-                self.boss!.bulletHandler = {
-                    [weak self] bullet in
-                    self?.enemyBullets.append(bullet)
-                }
+                self.boss!.bulletHandler = bulletHandler(bullet:)
             }
-            self.boss!.destructionHandler = {
-                [weak self] timer in
-                self!.score.score += 3
-                self?.debrisQueue.insert(Debris(position: self!.boss!.position, velocity: self!.boss!.velocity, scale: self!.boss!.scale), at: 0)
-                Timer.scheduledTimer(withTimeInterval: 2, repeats: false, block: {
-                    [weak self] timer in
-                    self?.debrisQueue.removeLast()
-                    self?.level += 1
-                })
-                self?.boss = nil
-            }
+            self.boss!.destructionHandler = bossDestructionHandler(boss:)
         } else {
             newEnemy = Enemy(position: position, radius: 0.1, path: path)
             enemies.append(newEnemy)
             if fireRate > 0 {
                 newEnemy.setTimer(fireRate: fireRate)
-                newEnemy.bulletHandler = {
-                    [weak self] bullet in
-                    self?.enemyBullets.append(bullet)
-                }
+                newEnemy.bulletHandler = bulletHandler(bullet:)
             }
-            newEnemy.exitHandler = {
-                [weak self] enemy in
-                for (index, element) in self!.enemies.enumerated() {
-                    if enemy === element {
-                        self?.enemies.remove(at: index)
-                    }
-                }
+            newEnemy.exitHandler = exitHandler(enemy:)
+        }
+    }
+    
+    func bossDestructionHandler(boss: Enemy) {
+        score.score += 3
+        debrisQueue.insert(Debris(position: boss.position, velocity: boss.velocity, scale: boss.scale), at: 0)
+        boss.bulletTimer?.invalidate()
+        boss.bulletTimer = nil
+        Timer.scheduledTimer(withTimeInterval: 2, repeats: false, block: {
+            [weak self] timer in
+            self?.debrisQueue.removeLast()
+            self?.level += 1
+        })
+        self.boss = nil
+    }
+    
+    func bulletHandler(bullet: Bullet) {
+        enemyBullets.append(bullet)
+    }
+    
+    func exitHandler(enemy: Enemy) {
+        for (index, element) in enemies.enumerated() {
+            if enemy === element {
+                enemy.bulletTimer?.invalidate()
+                enemy.bulletTimer = nil
+                enemies.remove(at: index)
             }
         }
     }
@@ -441,12 +452,14 @@ class GameModel {
         gameDict.setValue(score.score, forKey: GameModel.SCORE)
         gameDict.setValue(spawnedEnemies, forKey: GameModel.SPAWNED_ENEMIES)
         gameDict.setValue(GameModel.timePassed, forKey: GameModel.TIME_PASSED)
-        gameDict.write(to: getPath(), atomically: true)
+        gameDict.write(to: path, atomically: true)
     }
     
-    private func getPath() -> URL {
-        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
-        let documentsDirectory = paths[0]
-        return documentsDirectory.appendingPathComponent("ProjectF.plist")
+    private var path: URL {
+        get {
+            let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+            let documentsDirectory = paths[0]
+            return documentsDirectory.appendingPathComponent("ProjectF.plist")
+        }
     }
 }

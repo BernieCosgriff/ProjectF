@@ -33,6 +33,9 @@ class Enemy: Sprite, DestructableObject {
         self.radius = radius
         self.velocity = shipVelocity
         self.path = path
+        if position.x > 1 {
+            velocity.x = -velocity.x
+        }
         initRest()
     }
     
@@ -42,13 +45,19 @@ class Enemy: Sprite, DestructableObject {
         radius = dict.value(forKey: GameModel.RADIUS) as! Float
         velocity = (x: dict.value(forKey: GameModel.VELOCITY_X) as! Float, y: dict.value(forKey: GameModel.VELOCITY_Y) as! Float)
         path = Path(rawValue: dict.value(forKey: GameModel.PATH) as! Int)!
+        if dict.value(forKey: GameModel.ENTERED) != nil {
+            entered = true
+        }
+        if let fireRate = dict.value(forKey: GameModel.FIRE_RATE) as? Double {
+            bulletTimer = Timer.scheduledTimer(withTimeInterval: fireRate, repeats: true, block: {
+                [weak self] timer in
+                self?.bulletHandler?((self!.fireBullet(playerPosition: GameModel.player!.position)))
+            })
+        }
         initRest()
     }
     
     func initRest() {
-        if position.x > 0 {
-            velocity.x = -velocity.x
-        }
         if path == Path.zigzag {
             velocity.y = 0.01
             Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: {
@@ -106,6 +115,12 @@ class Enemy: Sprite, DestructableObject {
         dict.setValue(velocity.x, forKey: GameModel.VELOCITY_X)
         dict.setValue(velocity.y, forKey: GameModel.VELOCITY_Y)
         dict.setValue(path.rawValue, forKey: GameModel.PATH)
+        if entered {
+            dict.setValue(entered, forKey: GameModel.ENTERED)
+        }
+        if let timer = bulletTimer {
+            dict.setValue(timer.timeInterval.magnitude, forKey: GameModel.FIRE_RATE)
+        }
         return dict
     }
 }

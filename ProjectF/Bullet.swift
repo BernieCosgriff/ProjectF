@@ -10,9 +10,6 @@ import UIKit
 
 class Bullet: Sprite, DestructableObject {
     
-    //MARK: - Member Variables
-    var destructionHandler: ((_ object: DestructableObject, _ index: Int) -> Void)?
-    
     //MARK: - Initializers
     init(position: (x: Float, y: Float), velocity: (x: Float, y: Float), image: UIImage, rotation: Float) {
         super.init(image: image)
@@ -21,8 +18,9 @@ class Bullet: Sprite, DestructableObject {
         self.scale = (x: 0.03,y: 0.03)
     }
     
-    required init(dict: NSMutableDictionary) {
-        super.init(image: UIImage(named: "PlayerLaser")!)
+    required init(dict: NSMutableDictionary, playerBullet: Bool) {
+        let imgString = playerBullet ? "PlayerLaser" : "EnemyLaser"
+        super.init(image: UIImage(named: imgString)!)
         self.scale = (x: 0.03,y: 0.03)
         self.position = (x: dict.value(forKey: GameModel.POSITION_X) as! Float, y: dict.value(forKey: GameModel.POSITION_Y) as! Float)
         self.radius = dict.value(forKey: GameModel.RADIUS) as! Float

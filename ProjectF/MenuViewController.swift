@@ -10,4 +10,16 @@ import UIKit
 
 class MenuViewController: UIViewController {
     
+    override func viewDidLoad() {
+        view = MenuView(frame: UIScreen.main.bounds)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        UIView.animate(withDuration: 1, animations: {
+            [weak self] in
+            self?.view.alpha = 1.0
+        })
+    }
+    
 }

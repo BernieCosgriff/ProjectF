@@ -17,7 +17,7 @@ class Boss: Enemy {
     var display = true
     var timer: Timer?
     var timerCount = 0
-    var destructionHandler: ((_ object: DestructableObject) -> Void)?
+    var destructionHandler: ((_ boss: Enemy) -> Void)?
     
     init(position: (x: Float, y: Float), radius: Float, path: Path, lives: Int) {
         super.init(position: position, radius: radius, path: path)
