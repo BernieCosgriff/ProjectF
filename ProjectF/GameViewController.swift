@@ -13,10 +13,9 @@ class GameViewController: GLKViewController {
     var model: GameModel!
     var controls: ShipControlSet!
     var menuView: MenuView!
+    var highScoresView: HighScoreView!
     var pauseBtn: UIButton!
     var menuBtn: UIButton!
-    var resumeGameBtn: UIButton!
-    var highScoreBtn: UIButton!
     
     private var glkView: GLKView {
         return view as! GLKView
@@ -39,24 +38,18 @@ class GameViewController: GLKViewController {
         //Model stuff
         if model == nil {
             model = GameModel()
+            model.gameOverHandler = highScores
         }
         
+        highScoresView = HighScoreView(frame: UIScreen.main.bounds)
+        highScoresView.menuHandler = mainMenu
+        highScoresView.alpha = 0
+        
         menuView = MenuView(frame: UIScreen.main.bounds)
-        menuView.alpha = 0
-        
-        resumeGameBtn = UIButton(type: .custom)
-        resumeGameBtn.frame = CGRect(x: view.bounds.midX - 100, y: view.bounds.height * 0.1, width: 200, height: 50)
-        resumeGameBtn.setTitleColor(.green, for: .normal)
-        resumeGameBtn.setTitle("Resume Game", for: .normal)
-        resumeGameBtn.addTarget(self, action: #selector(resumeGame), for: .touchDown)
-        menuView.addSubview(resumeGameBtn)
-        
-        highScoreBtn = UIButton(type: .custom)
-        highScoreBtn.frame = CGRect(x: view.bounds.midX - 100, y: view.bounds.height * 0.3, width: 200, height: 50)
-        highScoreBtn.setTitleColor(.green, for: .normal)
-        highScoreBtn.setTitle("High Scores", for: .normal)
-//        highScoreBtn.addTarget(self, action: #selector(resumeGame), for: .touchDown)
-        menuView.addSubview(highScoreBtn)
+        menuView.resumeHandler = resumeGame
+        menuView.highScoresHandler = highScores
+        menuView.newGameHandler = newGame
+        menuView.alpha = 1
         
         let w = view.bounds.width
         controls = ShipControlSet(frame: CGRect(x: 0, y: view.bounds.height - w, width: w, height: w))
@@ -74,15 +67,51 @@ class GameViewController: GLKViewController {
         menuBtn.setTitle("Menu", for: .normal)
         menuBtn.addTarget(self, action: #selector(mainMenu), for: .touchDown)
         menuBtn.setTitleColor(.green, for: .normal)
+        
         view.addSubview(controls)
         view.addSubview(pauseBtn)
         view.addSubview(menuBtn)
         view.addSubview(menuView)
+        view.addSubview(highScoresView)
+    }
+    
+    func highScores() {
+        model.save()
+        if model.isGameOver {
+            controls.isUserInteractionEnabled = false
+            menuView.resumeGameBtn.setTitle("Start New Game", for: .normal)
+        }
+        highScoresView.scores = model.highScores
+        UIView.animate(withDuration: 1, animations: {
+            self.menuView.alpha = 0
+            self.highScoresView.alpha = 1
+            self.pauseBtn.alpha = 0
+            self.menuBtn.alpha = 0
+        })
+    }
+    
+    func newGame() {
+        model.reset()
+        model.save()
+        UIView.animate(withDuration: 1, animations: {
+            self.menuView.alpha = 0
+            self.highScoresView.alpha = 0
+            self.pauseBtn.alpha = 1
+            self.menuBtn.alpha = 1
+        }, completion: {
+            finished in
+            self.controls.isUserInteractionEnabled = true
+            self.isPaused = false
+        })
     }
     
     func mainMenu() {
+        model.save()
         isPaused = true
+        controls.isUserInteractionEnabled = false
+        menuView.resumeGameBtn.setTitle("Resume Game", for: .normal)
         UIView.animate(withDuration: 1, animations: {
+            self.highScoresView.alpha = 0
             self.menuView.alpha = 1
             self.pauseBtn.alpha = 0
             self.menuBtn.alpha = 0
@@ -93,10 +122,13 @@ class GameViewController: GLKViewController {
     }
     
     func pause(sender: UIButton) {
+        model.save()
         if sender.title(for: .normal) == "Pause" {
             pauseBtn.setTitle("Resume", for: .normal)
+            controls.isUserInteractionEnabled = false
         } else if sender.title(for: .normal) == "Resume" {
             pauseBtn.setTitle("Pause", for: .normal)
+            controls.isUserInteractionEnabled = true
         }
         isPaused = !isPaused
     }
@@ -104,10 +136,12 @@ class GameViewController: GLKViewController {
     func resumeGame() {
         UIView.animate(withDuration: 1, animations: {
             self.menuView.alpha = 0
+            self.highScoresView.alpha = 0
             self.pauseBtn.alpha = 1
             self.menuBtn.alpha = 1
         }, completion: {
             finished in
+            self.controls.isUserInteractionEnabled = true
             self.isPaused = false
         })
     }

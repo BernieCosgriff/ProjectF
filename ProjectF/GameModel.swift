@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import AVFoundation
 
 protocol DestructableObject {
     //MARK: - Member Variables
@@ -25,14 +26,17 @@ class GameModel {
     var enemyBullets = [Bullet]()
     var debrisQueue = [Debris]()
     var livesArr = [PlayerLife]()
-    var lives = 3
     var score = Score()
     var spawnedEnemies = 0
     var levelInt = 1
     let playerVelocityX: Float = 0.05
     let playerVelocityY: Float = 0.025
-    var paused = false
     static var timePassed: Double = 0.0
+    var soundPlayer: AVAudioPlayer!
+    var backgroundPlayer: AVAudioPlayer!
+    var highScores = [0,0,0]
+    var gameOverHandler: (() -> Void)?
+    var isGameOver = false
     
     var level: Int {
         get {
@@ -68,6 +72,7 @@ class GameModel {
     static let TIME_PASSED = "timePassed"
     static let FIRE_RATE = "fireRate"
     static let ENTERED = "entered"
+    static let HIGH_SCORES = "highScores"
     static let SHIP_SIZE: (x: Float, y: Float) = (x: 0.15,y: 0.15)
     
     //MARK: - Initializers
@@ -104,10 +109,6 @@ class GameModel {
                 self.boss?.destructionHandler = bossDestructionHandler(boss:)
                 self.boss?.bulletHandler = bulletHandler(bullet:)
             }
-            //Lives
-            if let lives = dict.value(forKey: GameModel.LIVES) as? Int {
-                self.lives = lives
-            }
             //Level
             if let level = dict.value(forKey: GameModel.LEVEL) as? Int {
                 self.levelInt = level
@@ -124,14 +125,52 @@ class GameModel {
             if let timePassed = dict.value(forKey: GameModel.TIME_PASSED) as? Double {
                 GameModel.timePassed = timePassed
             }
+            //High Scores
+            if let scores = dict.value(forKey: GameModel.HIGH_SCORES) as? [Int] {
+                highScores = scores
+            }
          } else {
-            GameModel.player = Player()
+            GameModel.player = Player(lives: 3)
         }
+        GameModel.player.destructionHandler = gameOver
         background = ScrollingBackground(level: levelInt)
         background.levelUpHandler = nextLevel
-        for i in 0...lives - 1 {
+        for i in 0...GameModel.player.lives - 1 {
             livesArr.append(PlayerLife(position: (x: -0.93 + (Float(i)*0.2), y: 0.88)))
         }
+        let queue = OperationQueue()
+        queue.addOperation {
+            let url = Bundle.main.url(forResource: "BackgroundMusic", withExtension: "wav")!
+            do {
+                self.backgroundPlayer = try AVAudioPlayer(contentsOf: url)
+                guard let player = self.backgroundPlayer else { return }
+                player.prepareToPlay()
+                player.numberOfLoops = -1
+                player.volume = 0.1
+                player.play()
+            } catch{}
+        }
+    }
+    
+    func reset() {
+        GameModel.player = Player(lives: 3)
+        GameModel.player.destructionHandler = gameOver
+        background = ScrollingBackground(level: levelInt)
+        background.levelUpHandler = nextLevel
+        livesArr = []
+        for i in 0...GameModel.player.lives - 1 {
+            livesArr.append(PlayerLife(position: (x: -0.93 + (Float(i)*0.2), y: 0.88)))
+        }
+        boss = nil
+        enemies = []
+        playerBullets = []
+        enemyBullets = []
+        debrisQueue = []
+        score = Score()
+        spawnedEnemies = 0
+        levelInt = 1
+        GameModel.timePassed = 0
+        isGameOver = false
     }
     
     //MARK: - Game Logic
@@ -226,6 +265,21 @@ class GameModel {
         move()
     }
     
+    private func playSound(sound: String, ext: String) {
+        let queue = OperationQueue()
+        queue.addOperation {
+            let url = Bundle.main.url(forResource: sound, withExtension: ext)!
+            do {
+                self.soundPlayer = try AVAudioPlayer(contentsOf: url)
+                guard let player = self.soundPlayer else { return }
+                
+                player.prepareToPlay()
+                player.volume = 1.0
+                player.play()
+            } catch{}
+        }
+    }
+    
     private func addEnemy(fireRate: Double, position: (x: Float, y: Float), path: Enemy.Path, bossLives: Int) {
         spawnedEnemies += 1
         var newEnemy: Enemy!
@@ -258,6 +312,7 @@ class GameModel {
             self?.level += 1
         })
         self.boss = nil
+        save()
     }
     
     func bulletHandler(bullet: Bullet) {
@@ -293,6 +348,9 @@ class GameModel {
     }
     
     private func checkCollisions() {
+        if isGameOver {
+            return
+        }
         if GameModel.player.hittable {
             if let player = GameModel.player {
                 //Enemy - Player
@@ -307,13 +365,24 @@ class GameModel {
                         player.hit()
                         if !livesArr.isEmpty {
                             livesArr.removeLast()
+                            playSound(sound: "loseLife", ext: "mp3")
+                        } else {
+                            playSound(sound: "Bomb", ext: "mp3")
                         }
                     }
                 }
+                //Enemy - Boss
                 if let boss = boss {
                     if boss.hittable {
                         if hasCollided(a: player, b: boss) {
                             boss.hit()
+                            player.hit()
+                            if !livesArr.isEmpty {
+                                livesArr.removeLast()
+                                playSound(sound: "loseLife", ext: "mp3")
+                            } else {
+                                playSound(sound: "Bomb", ext: "mp3")
+                            }
                         }
                     }
                 }
@@ -321,11 +390,15 @@ class GameModel {
                 for (index, element) in enemyBullets.enumerated().reversed() {
                     if hasCollided(a: player, b: element) {
                         enemyBullets.remove(at: index)
-                        player.hit()
                         score.score -= 1
+                        player.hit()
                         if !livesArr.isEmpty {
                             livesArr.removeLast()
+                            playSound(sound: "loseLife", ext: "mp3")
+                        } else {
+                            playSound(sound: "Bomb", ext: "mp3")
                         }
+                        
                         break;
                     }
                 }
@@ -339,6 +412,7 @@ class GameModel {
                         boss.hit()
                         score.score += 1
                         playerBullets.remove(at: index)
+                        playSound(sound: "zap", ext: "mp3")
                     }
                 }
             }
@@ -353,6 +427,7 @@ class GameModel {
                     })
                     enemies.remove(at: i)
                     playerBullets.remove(at: index)
+                    playSound(sound: "zap", ext: "mp3")
                 }
             }
         }
@@ -371,7 +446,16 @@ class GameModel {
     }
     
     private func gameOver() {
-        
+        isGameOver = true
+        for i in 0..<highScores.count {
+            if highScores[i] < score.score {
+                highScores.insert(score.score, at: i)
+                highScores.removeLast()
+                break
+            }
+        }
+        save()
+        gameOverHandler?()
     }
     
     func setPlayerMovement(value: ShipControlSet.value) {
@@ -389,6 +473,7 @@ class GameModel {
         case .middleStart:
             if let bullet = GameModel.player?.fireBullet(){
                 playerBullets.append(bullet)
+                playSound(sound: "sfx_laser1", ext: "mp3")
             }
         case .middleStop:
             break;
@@ -447,11 +532,11 @@ class GameModel {
         gameDict.setValue(playerBulletArr, forKey: GameModel.PLAYER_BULLETS)
         gameDict.setValue(enemyBulletArr, forKey: GameModel.ENEMY_BULLETS)
         gameDict.setValue(GameModel.player.toDict(), forKey: GameModel.PLAYER)
-        gameDict.setValue(lives, forKey: GameModel.LIVES)
         gameDict.setValue(levelInt, forKey: GameModel.LEVEL)
         gameDict.setValue(score.score, forKey: GameModel.SCORE)
         gameDict.setValue(spawnedEnemies, forKey: GameModel.SPAWNED_ENEMIES)
         gameDict.setValue(GameModel.timePassed, forKey: GameModel.TIME_PASSED)
+        gameDict.setValue(highScores, forKey: GameModel.HIGH_SCORES)
         gameDict.write(to: path, atomically: true)
     }
     

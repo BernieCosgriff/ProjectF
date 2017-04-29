@@ -10,6 +10,13 @@
 		A618ADCE1EA1A766002DB4A6 /* ShipControlSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A618ADCD1EA1A766002DB4A6 /* ShipControlSet.swift */; };
 		A618ADD01EA1A913002DB4A6 /* ShipControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = A618ADCF1EA1A913002DB4A6 /* ShipControl.swift */; };
 		A61A7FDF1EB3022600C2C513 /* PauseModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = A61A7FDE1EB3022600C2C513 /* PauseModal.swift */; };
+		A61A7FE21EB3E14700C2C513 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A61A7FE11EB3E14700C2C513 /* AVFoundation.framework */; };
+		A61A7FE41EB3E18200C2C513 /* Bomb.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = A61A7FE31EB3E18200C2C513 /* Bomb.mp3 */; };
+		A61A7FE71EB3E5F500C2C513 /* sfx_laser1.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = A61A7FE61EB3E5F500C2C513 /* sfx_laser1.mp3 */; };
+		A61A7FE91EB3EB5600C2C513 /* zap.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = A61A7FE81EB3EB5600C2C513 /* zap.mp3 */; };
+		A61A7FEB1EB3EBCC00C2C513 /* loseLife.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = A61A7FEA1EB3EBCC00C2C513 /* loseLife.mp3 */; };
+		A61A7FED1EB3F51600C2C513 /* HighScoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A61A7FEC1EB3F51600C2C513 /* HighScoreView.swift */; };
+		A61A7FEF1EB40B0200C2C513 /* BackgroundMusic.wav in Resources */ = {isa = PBXBuildFile; fileRef = A61A7FEE1EB40B0200C2C513 /* BackgroundMusic.wav */; };
 		A62687951E90741100118D29 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A62687941E90741100118D29 /* AppDelegate.swift */; };
 		A626879A1E90741100118D29 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A62687981E90741100118D29 /* Main.storyboard */; };
 		A626879C1E90741100118D29 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A626879B1E90741100118D29 /* Assets.xcassets */; };
@@ -41,6 +48,13 @@
 		A618ADCD1EA1A766002DB4A6 /* ShipControlSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShipControlSet.swift; sourceTree = "<group>"; };
 		A618ADCF1EA1A913002DB4A6 /* ShipControl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShipControl.swift; sourceTree = "<group>"; };
 		A61A7FDE1EB3022600C2C513 /* PauseModal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PauseModal.swift; sourceTree = "<group>"; };
+		A61A7FE11EB3E14700C2C513 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		A61A7FE31EB3E18200C2C513 /* Bomb.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Bomb.mp3; sourceTree = "<group>"; };
+		A61A7FE61EB3E5F500C2C513 /* sfx_laser1.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = sfx_laser1.mp3; sourceTree = "<group>"; };
+		A61A7FE81EB3EB5600C2C513 /* zap.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = zap.mp3; sourceTree = "<group>"; };
+		A61A7FEA1EB3EBCC00C2C513 /* loseLife.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = loseLife.mp3; sourceTree = "<group>"; };
+		A61A7FEC1EB3F51600C2C513 /* HighScoreView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HighScoreView.swift; sourceTree = "<group>"; };
+		A61A7FEE1EB40B0200C2C513 /* BackgroundMusic.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = BackgroundMusic.wav; sourceTree = "<group>"; };
 		A62687911E90741100118D29 /* ProjectF.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ProjectF.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A62687941E90741100118D29 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A62687991E90741100118D29 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -75,17 +89,27 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A61A7FE21EB3E14700C2C513 /* AVFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A61A7FE01EB3E14700C2C513 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A61A7FE11EB3E14700C2C513 /* AVFoundation.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		A62687881E90741100118D29 = {
 			isa = PBXGroup;
 			children = (
 				A62687931E90741100118D29 /* ProjectF */,
 				A62687921E90741100118D29 /* Products */,
+				A61A7FE01EB3E14700C2C513 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -118,6 +142,7 @@
 				A626879D1E90741100118D29 /* LaunchScreen.storyboard */,
 				A6284F971E9190A7005D8A55 /* MenuView.swift */,
 				A61A7FDE1EB3022600C2C513 /* PauseModal.swift */,
+				A61A7FEC1EB3F51600C2C513 /* HighScoreView.swift */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -156,6 +181,11 @@
 		A6284F9E1E91916B005D8A55 /* Other */ = {
 			isa = PBXGroup;
 			children = (
+				A61A7FEA1EB3EBCC00C2C513 /* loseLife.mp3 */,
+				A61A7FE61EB3E5F500C2C513 /* sfx_laser1.mp3 */,
+				A61A7FE31EB3E18200C2C513 /* Bomb.mp3 */,
+				A61A7FE81EB3EB5600C2C513 /* zap.mp3 */,
+				A61A7FEE1EB40B0200C2C513 /* BackgroundMusic.wav */,
 				A62687941E90741100118D29 /* AppDelegate.swift */,
 				A626879B1E90741100118D29 /* Assets.xcassets */,
 				A62687A01E90741100118D29 /* Info.plist */,
@@ -227,8 +257,13 @@
 				A6AEE36C1EAC011600A0F427 /* Attributions.txt in Resources */,
 				A626879F1E90741100118D29 /* LaunchScreen.storyboard in Resources */,
 				A626879C1E90741100118D29 /* Assets.xcassets in Resources */,
+				A61A7FE91EB3EB5600C2C513 /* zap.mp3 in Resources */,
 				A6F7C6401E984B4600CD89A8 /* sprite_fragment.glsl in Resources */,
+				A61A7FE71EB3E5F500C2C513 /* sfx_laser1.mp3 in Resources */,
+				A61A7FE41EB3E18200C2C513 /* Bomb.mp3 in Resources */,
+				A61A7FEB1EB3EBCC00C2C513 /* loseLife.mp3 in Resources */,
 				A626879A1E90741100118D29 /* Main.storyboard in Resources */,
+				A61A7FEF1EB40B0200C2C513 /* BackgroundMusic.wav in Resources */,
 				A6F7C6411E984B4600CD89A8 /* sprite_vertex.glsl in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -251,6 +286,7 @@
 				A61A7FDF1EB3022600C2C513 /* PauseModal.swift in Sources */,
 				A62687951E90741100118D29 /* AppDelegate.swift in Sources */,
 				A6AEE36E1EAEA95900A0F427 /* Boss.swift in Sources */,
+				A61A7FED1EB3F51600C2C513 /* HighScoreView.swift in Sources */,
 				A618ADCE1EA1A766002DB4A6 /* ShipControlSet.swift in Sources */,
 				A618ADD01EA1A913002DB4A6 /* ShipControl.swift in Sources */,
 				A6284F9D1E919106005D8A55 /* GameViewController.swift in Sources */,

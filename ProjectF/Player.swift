@@ -14,21 +14,22 @@ class Player: Sprite, DestructableObject {
     private let laser = UIImage(named: "PlayerLaser")!
     private let bulletVelocity: (x: Float, y: Float) = (x: 0.0, y: 0.04)
     private let PLAYER_START: (x: Float, y: Float) = (x: 0.0, y: -0.45)
-    private var lives = 5
+    var lives = 3
     private var fireSprite: Fire?
     private var timer: Timer?
     private var timerCount = 0
     var hittable = true
     var display = true
-    var destructionHandler: ((_ object: DestructableObject) -> Void)?
+    var destructionHandler: (() -> Void)?
     
     //MARK: - Initializers
-    init() {
+    init(lives: Int) {
         super.init(image: UIImage(named: "Player")!)
         self.position = PLAYER_START
         self.radius = 0.1
         self.velocity = (x: 0.0, y: 0.0)
         self.scale = GameModel.SHIP_SIZE
+        self.lives = lives
     }
     
     required init(dict: NSMutableDictionary) {
@@ -36,6 +37,7 @@ class Player: Sprite, DestructableObject {
         position = (x: dict.value(forKey: GameModel.POSITION_X) as! Float, y: dict.value(forKey: GameModel.POSITION_Y) as! Float)
         radius = dict.value(forKey: GameModel.RADIUS) as! Float
         velocity = (x: dict.value(forKey: GameModel.VELOCITY_X) as! Float, y: dict.value(forKey: GameModel.VELOCITY_Y) as! Float)
+        lives = dict.value(forKey: GameModel.LIVES) as! Int
         scale = GameModel.SHIP_SIZE
     }
     
@@ -61,8 +63,8 @@ class Player: Sprite, DestructableObject {
                 timer.invalidate()
             }
         })
-        if lives == 0 {
-            destructionHandler?(self)
+        if lives < 0 {
+            destructionHandler?()
         }
     }
     
@@ -110,6 +112,7 @@ class Player: Sprite, DestructableObject {
         dict.setValue(position.y, forKey: GameModel.POSITION_Y)
         dict.setValue(velocity.x, forKey: GameModel.VELOCITY_X)
         dict.setValue(velocity.y, forKey: GameModel.VELOCITY_Y)
+        dict.setValue(lives, forKey: GameModel.LIVES)
         return dict
     }
 }
