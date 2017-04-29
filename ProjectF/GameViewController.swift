@@ -38,7 +38,7 @@ class GameViewController: GLKViewController {
         //Model stuff
         if model == nil {
             model = GameModel()
-            model.gameOverHandler = highScores
+            model.gameOverHandler = gameOver
         }
         
         highScoresView = HighScoreView(frame: UIScreen.main.bounds)
@@ -73,13 +73,42 @@ class GameViewController: GLKViewController {
         view.addSubview(menuBtn)
         view.addSubview(menuView)
         view.addSubview(highScoresView)
+        
+        mainMenu()
     }
-    
+
+    func gameOver() {
+        UIView.animate(withDuration: 1, animations: {
+            self.view.alpha = 0.5
+            self.menuView.alpha = 0
+            self.highScoresView.alpha = 0
+            self.pauseBtn.alpha = 0
+            self.menuBtn.alpha = 0
+        })
+        let input = UIAlertController(title: "You got a High Score!", message: "Please enter your name.", preferredStyle: .alert)
+        let action = UIAlertAction(title: "Done", style: .default, handler: {
+            [weak input] (_) in
+            self.model.setHighScores(name: input!.textFields![0].text!)
+            self.view.alpha = 1
+            self.highScores()
+        })
+        action.isEnabled = false
+        input.addTextField(configurationHandler: {
+            textField in
+            textField.placeholder = "Name"
+            NotificationCenter.default.addObserver(forName: NSNotification.Name.UITextFieldTextDidChange, object: textField, queue: OperationQueue(), using: {
+                notification in
+                action.isEnabled = textField.hasText
+            })
+        })
+        input.addAction(action)
+        present(input, animated: true, completion: nil)
+    }
+
     func highScores() {
         model.save()
         if model.isGameOver {
             controls.isUserInteractionEnabled = false
-            menuView.resumeGameBtn.setTitle("Start New Game", for: .normal)
         }
         highScoresView.scores = model.highScores
         UIView.animate(withDuration: 1, animations: {
@@ -109,7 +138,11 @@ class GameViewController: GLKViewController {
         model.save()
         isPaused = true
         controls.isUserInteractionEnabled = false
-        menuView.resumeGameBtn.setTitle("Resume Game", for: .normal)
+        if model.isGameOver {
+            menuView.resumeGameBtn.setTitle("Start New Game", for: .normal)
+        } else {
+            menuView.resumeGameBtn.setTitle("Resume Game", for: .normal)
+        }
         UIView.animate(withDuration: 1, animations: {
             self.highScoresView.alpha = 0
             self.menuView.alpha = 1

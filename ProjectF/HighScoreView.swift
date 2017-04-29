@@ -14,25 +14,25 @@ class HighScoreView: UIView {
     var secondLabel: UILabel!
     var thirdLabel: UILabel!
     var menuBtn: UIButton!
-    var privateScores = [0,0,0]
+    var privateScores: [(name: String, score: Int)] = [(name: "", score: 0),(name: "", score: 0),(name: "", score: 0)]
     var menuHandler: (() -> Void)?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         firstLabel = UILabel(frame: CGRect(x: bounds.midX - 100, y: bounds.height * 0.1, width: 200, height: 50))
-        firstLabel.text = "First: \(scores[0])"
+        firstLabel.text = "No Score Yet!"
         firstLabel.textColor = .white
         firstLabel.textAlignment = .center
         addSubview(firstLabel)
         
         secondLabel = UILabel(frame: CGRect(x: bounds.midX - 100, y: bounds.height * 0.3, width: 200, height: 50))
-        secondLabel.text = "Second: \(scores[0])"
+        secondLabel.text = "No Score Yet!"
         secondLabel.textColor = .white
         secondLabel.textAlignment = .center
         addSubview(secondLabel)
         
         thirdLabel = UILabel(frame: CGRect(x: bounds.midX - 100, y: bounds.height * 0.5, width: 200, height: 50))
-        thirdLabel.text = "Third: \(scores[2])"
+        thirdLabel.text = "No Score Yet!"
         thirdLabel.textColor = .white
         thirdLabel.textAlignment = .center
         addSubview(thirdLabel)
@@ -47,15 +47,27 @@ class HighScoreView: UIView {
         backgroundColor = UIColor(colorLiteralRed: 0, green: 0, blue: 0, alpha: 0.5)
     }
     
-    var scores: [Int] {
+    var scores: [(name:String, score: Int)] {
         get {
             return privateScores
         }
         set {
             privateScores = newValue
-            firstLabel.text = "First: \(privateScores[0])"
-            secondLabel.text = "Second: \(privateScores[1])"
-            thirdLabel.text = "Third: \(privateScores[2])"
+            if privateScores[0].name != "" {
+                firstLabel.text = "\(privateScores[0].name): \(privateScores[0].score)"
+            } else {
+                firstLabel.text = "No Score Yet!"
+            }
+            if privateScores[1].name != "" {
+                secondLabel.text = "\(privateScores[1].name): \(privateScores[1].score)"
+            } else {
+                secondLabel.text = "No Score Yet!"
+            }
+            if privateScores[2].name != "" {
+                thirdLabel.text = "\(privateScores[2].name): \(privateScores[2].score)"
+            } else {
+                thirdLabel.text = "No Score Yet!"
+            }
         }
     }
     

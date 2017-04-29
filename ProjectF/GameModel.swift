@@ -34,9 +34,9 @@ class GameModel {
     static var timePassed: Double = 0.0
     var soundPlayer: AVAudioPlayer!
     var backgroundPlayer: AVAudioPlayer!
-    var highScores = [0,0,0]
+    var highScores: [(name: String, score: Int)] = [(name: "", score: 0),(name: "", score: 0),(name: "", score: 0)]
     var gameOverHandler: (() -> Void)?
-    var isGameOver = false
+    var isGameOver = true
     
     var level: Int {
         get {
@@ -72,7 +72,9 @@ class GameModel {
     static let TIME_PASSED = "timePassed"
     static let FIRE_RATE = "fireRate"
     static let ENTERED = "entered"
-    static let HIGH_SCORES = "highScores"
+    static let HIGH_SCORES_NAMES = "highScoresNames"
+    static let HIGH_SCORES_VALUES = "highScoresValues"
+    static let GAME_OVER = "gameOver"
     static let SHIP_SIZE: (x: Float, y: Float) = (x: 0.15,y: 0.15)
     
     //MARK: - Initializers
@@ -126,8 +128,15 @@ class GameModel {
                 GameModel.timePassed = timePassed
             }
             //High Scores
-            if let scores = dict.value(forKey: GameModel.HIGH_SCORES) as? [Int] {
-                highScores = scores
+            if let names = dict.value(forKey: GameModel.HIGH_SCORES_NAMES) as? [String], let scores = dict.value(forKey: GameModel.HIGH_SCORES_VALUES) as? [Int] {
+                highScores = []
+                for i in 0..<names.count {
+                    highScores.append((name: names[i], score: scores[i]))
+                }
+            }
+            //isGameOver
+            if let gameOver = dict.value(forKey: GameModel.GAME_OVER) as? Bool {
+                isGameOver = gameOver
             }
          } else {
             GameModel.player = Player(lives: 3)
@@ -135,8 +144,10 @@ class GameModel {
         GameModel.player.destructionHandler = gameOver
         background = ScrollingBackground(level: levelInt)
         background.levelUpHandler = nextLevel
-        for i in 0...GameModel.player.lives - 1 {
-            livesArr.append(PlayerLife(position: (x: -0.93 + (Float(i)*0.2), y: 0.88)))
+        if GameModel.player.lives > 0 {
+            for i in 0...GameModel.player.lives - 1 {
+                livesArr.append(PlayerLife(position: (x: -0.93 + (Float(i)*0.2), y: 0.88)))
+            }
         }
         let queue = OperationQueue()
         queue.addOperation {
@@ -154,6 +165,9 @@ class GameModel {
     
     func reset() {
         GameModel.player = Player(lives: 3)
+        levelInt = 1
+        spawnedEnemies = 0
+        GameModel.timePassed = 0
         GameModel.player.destructionHandler = gameOver
         background = ScrollingBackground(level: levelInt)
         background.levelUpHandler = nextLevel
@@ -167,9 +181,6 @@ class GameModel {
         enemyBullets = []
         debrisQueue = []
         score = Score()
-        spawnedEnemies = 0
-        levelInt = 1
-        GameModel.timePassed = 0
         isGameOver = false
     }
     
@@ -310,6 +321,8 @@ class GameModel {
             [weak self] timer in
             self?.debrisQueue.removeLast()
             self?.level += 1
+            GameModel.timePassed = 0
+            self?.spawnedEnemies = 0
         })
         self.boss = nil
         save()
@@ -445,15 +458,18 @@ class GameModel {
         spawnedEnemies = 0
     }
     
-    private func gameOver() {
-        isGameOver = true
+    func setHighScores(name: String) {
         for i in 0..<highScores.count {
-            if highScores[i] < score.score {
-                highScores.insert(score.score, at: i)
+            if highScores[i].score < score.score || highScores[i].name.isEmpty {
+                highScores.insert((name: name, score: score.score), at: i)
                 highScores.removeLast()
                 break
             }
         }
+    }
+    
+    private func gameOver() {
+        isGameOver = true
         save()
         gameOverHandler?()
     }
@@ -514,6 +530,8 @@ class GameModel {
         let enemyArr = NSMutableArray()
         let playerBulletArr = NSMutableArray()
         let enemyBulletArr = NSMutableArray()
+        var nameArr = [String]()
+        var scoreArr = [Int]()
         
         for enemy in enemies {
             enemyArr.add(enemy.toDict())
@@ -536,8 +554,15 @@ class GameModel {
         gameDict.setValue(score.score, forKey: GameModel.SCORE)
         gameDict.setValue(spawnedEnemies, forKey: GameModel.SPAWNED_ENEMIES)
         gameDict.setValue(GameModel.timePassed, forKey: GameModel.TIME_PASSED)
-        gameDict.setValue(highScores, forKey: GameModel.HIGH_SCORES)
+        gameDict.setValue(isGameOver, forKey: GameModel.GAME_OVER)
+        for i in 0..<highScores.count {
+            nameArr.append(highScores[i].name)
+            scoreArr.append(highScores[i].score)
+        }
+        gameDict.setValue(nameArr, forKey: GameModel.HIGH_SCORES_NAMES)
+        gameDict.setValue(scoreArr, forKey: GameModel.HIGH_SCORES_VALUES)
         gameDict.write(to: path, atomically: true)
+        print("Saved")
     }
     
     private var path: URL {
