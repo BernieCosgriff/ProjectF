@@ -34,9 +34,10 @@ class GameModel {
     static var timePassed: Double = 0.0
     var soundPlayer: AVAudioPlayer!
     var backgroundPlayer: AVAudioPlayer!
-    var highScores: [(name: String, score: Int)] = [(name: "", score: 0),(name: "", score: 0),(name: "", score: 0)]
+    var highScores: [(name: String, score: Int)] = [(name: "", score: 0),(name: "", score: 0),(name: "", score: 0),(name: "", score: 0),(name: "", score: 0)]
     var gameOverHandler: (() -> Void)?
     var isGameOver = true
+    var playerExplosion: PlayerExplosion?
     
     var level: Int {
         get {
@@ -272,6 +273,7 @@ class GameModel {
         } else {
             gameOver()
         }
+        
         checkCollisions()
         move()
     }
@@ -346,6 +348,7 @@ class GameModel {
         GameModel.player?.move()
         background?.move()
         boss?.move()
+        playerExplosion?.move()
         for bullet in playerBullets {
             bullet.move()
         }
@@ -468,10 +471,25 @@ class GameModel {
         }
     }
     
+    func isHighScore() -> Bool {
+        for i in 0..<highScores.count {
+            if highScores[i].score < score.score || highScores[i].name.isEmpty {
+                return true
+            }
+        }
+        return false
+    }
+    
     private func gameOver() {
+        playerExplosion = PlayerExplosion(position: GameModel.player.position, velocity: GameModel.player.velocity, scale: (x: 0.3, y: 0.2))
         isGameOver = true
         save()
-        gameOverHandler?()
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: false, block: {
+            _ in
+            self.playerExplosion = nil
+            self.gameOverHandler?()
+        })
+        
     }
     
     func setPlayerMovement(value: ShipControlSet.value) {
@@ -509,6 +527,7 @@ class GameModel {
         GameModel.player?.draw()
         boss?.draw()
         score.draw()
+        playerExplosion?.draw()
         for bullet in playerBullets + enemyBullets {
             bullet.draw()
         }

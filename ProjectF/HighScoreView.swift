@@ -13,6 +13,8 @@ class HighScoreView: UIView {
     var firstLabel: UILabel!
     var secondLabel: UILabel!
     var thirdLabel: UILabel!
+    var fourthLabel: UILabel!
+    var fifthLabel: UILabel!
     var menuBtn: UIButton!
     var privateScores: [(name: String, score: Int)] = [(name: "", score: 0),(name: "", score: 0),(name: "", score: 0)]
     var menuHandler: (() -> Void)?
@@ -25,20 +27,32 @@ class HighScoreView: UIView {
         firstLabel.textAlignment = .center
         addSubview(firstLabel)
         
-        secondLabel = UILabel(frame: CGRect(x: bounds.midX - 100, y: bounds.height * 0.3, width: 200, height: 50))
+        secondLabel = UILabel(frame: CGRect(x: bounds.midX - 100, y: bounds.height * 0.2, width: 200, height: 50))
         secondLabel.text = "No Score Yet!"
         secondLabel.textColor = .white
         secondLabel.textAlignment = .center
         addSubview(secondLabel)
         
-        thirdLabel = UILabel(frame: CGRect(x: bounds.midX - 100, y: bounds.height * 0.5, width: 200, height: 50))
+        thirdLabel = UILabel(frame: CGRect(x: bounds.midX - 100, y: bounds.height * 0.3, width: 200, height: 50))
         thirdLabel.text = "No Score Yet!"
         thirdLabel.textColor = .white
         thirdLabel.textAlignment = .center
         addSubview(thirdLabel)
         
+        fourthLabel = UILabel(frame: CGRect(x: bounds.midX - 100, y: bounds.height * 0.4, width: 200, height: 50))
+        fourthLabel.text = "No Score Yet!"
+        fourthLabel.textColor = .white
+        fourthLabel.textAlignment = .center
+        addSubview(fourthLabel)
+        
+        fifthLabel = UILabel(frame: CGRect(x: bounds.midX - 100, y: bounds.height * 0.5, width: 200, height: 50))
+        fifthLabel.text = "No Score Yet!"
+        fifthLabel.textColor = .white
+        fifthLabel.textAlignment = .center
+        addSubview(fifthLabel)
+        
         menuBtn = UIButton(type: .custom)
-        menuBtn.frame = CGRect(x: bounds.midX - 35, y: bounds.height * 0.7, width: 70, height: 25)
+        menuBtn.frame = CGRect(x: bounds.midX - 35, y: bounds.height * 0.6, width: 70, height: 25)
         menuBtn.setTitleColor(.green, for: .normal)
         menuBtn.setTitle("Menu", for: .normal)
         menuBtn.addTarget(self, action: #selector(mainMenu), for: .touchDown)
@@ -67,6 +81,16 @@ class HighScoreView: UIView {
                 thirdLabel.text = "\(privateScores[2].name): \(privateScores[2].score)"
             } else {
                 thirdLabel.text = "No Score Yet!"
+            }
+            if privateScores[3].name != "" {
+                fourthLabel.text = "\(privateScores[3].name): \(privateScores[3].score)"
+            } else {
+                fourthLabel.text = "No Score Yet!"
+            }
+            if privateScores[4].name != "" {
+                fifthLabel.text = "\(privateScores[4].name): \(privateScores[4].score)"
+            } else {
+                fifthLabel.text = "No Score Yet!"
             }
         }
     }

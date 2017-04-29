@@ -52,6 +52,10 @@ class Player: Sprite, DestructableObject {
         lives -= 1
         hittable = false
         display = false
+        if lives < 0 {
+            destructionHandler?()
+            return
+        }
         timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true, block: {
             [weak self] timer in
             self?.display = !self!.display
@@ -63,9 +67,6 @@ class Player: Sprite, DestructableObject {
                 timer.invalidate()
             }
         })
-        if lives < 0 {
-            destructionHandler?()
-        }
     }
     
     func move() {

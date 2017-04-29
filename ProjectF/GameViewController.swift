@@ -16,6 +16,7 @@ class GameViewController: GLKViewController {
     var highScoresView: HighScoreView!
     var pauseBtn: UIButton!
     var menuBtn: UIButton!
+    var gameOverLabel: UILabel!
     
     private var glkView: GLKView {
         return view as! GLKView
@@ -68,11 +69,21 @@ class GameViewController: GLKViewController {
         menuBtn.addTarget(self, action: #selector(mainMenu), for: .touchDown)
         menuBtn.setTitleColor(.green, for: .normal)
         
+        gameOverLabel = UILabel(frame: CGRect(x: view.bounds.midX - 100, y: view.bounds.height * 0.3, width: 200, height: 50))
+        gameOverLabel.text = "Game Over"
+        gameOverLabel.textColor = .green
+        gameOverLabel.textAlignment = .center
+        gameOverLabel.alpha = 0
+        
+        view.addSubview(gameOverLabel)
         view.addSubview(controls)
         view.addSubview(pauseBtn)
         view.addSubview(menuBtn)
         view.addSubview(menuView)
         view.addSubview(highScoresView)
+        
+        pauseOnWillResignActive = false
+        resumeOnDidBecomeActive = false
         
         mainMenu()
     }
@@ -80,29 +91,48 @@ class GameViewController: GLKViewController {
     func gameOver() {
         UIView.animate(withDuration: 1, animations: {
             self.view.alpha = 0.5
+            self.gameOverLabel.alpha = 1
             self.menuView.alpha = 0
             self.highScoresView.alpha = 0
             self.pauseBtn.alpha = 0
             self.menuBtn.alpha = 0
-        })
-        let input = UIAlertController(title: "You got a High Score!", message: "Please enter your name.", preferredStyle: .alert)
-        let action = UIAlertAction(title: "Done", style: .default, handler: {
-            [weak input] (_) in
-            self.model.setHighScores(name: input!.textFields![0].text!)
-            self.view.alpha = 1
-            self.highScores()
-        })
-        action.isEnabled = false
-        input.addTextField(configurationHandler: {
-            textField in
-            textField.placeholder = "Name"
-            NotificationCenter.default.addObserver(forName: NSNotification.Name.UITextFieldTextDidChange, object: textField, queue: OperationQueue(), using: {
-                notification in
-                action.isEnabled = textField.hasText
+        }, completion: {
+            finished in
+            Timer.scheduledTimer(withTimeInterval: 1, repeats: false, block: {
+                _ in
+                UIView.animate(withDuration: 1, animations: {
+                    self.gameOverLabel.alpha = 0
+                }, completion: {
+                    finished in
+                    self.getNameForHighScore()
+                })
             })
         })
-        input.addAction(action)
-        present(input, animated: true, completion: nil)
+    }
+    
+    func getNameForHighScore() {
+        if model.isHighScore() {
+            let input = UIAlertController(title: "You got a High Score!", message: "Please enter your name.", preferredStyle: .alert)
+            let action = UIAlertAction(title: "Done", style: .default, handler: {
+                [weak input] (_) in
+                self.model.setHighScores(name: input!.textFields![0].text!)
+                self.view.alpha = 1
+                self.highScores()
+            })
+            action.isEnabled = false
+            input.addTextField(configurationHandler: {
+                textField in
+                textField.placeholder = "Name"
+                NotificationCenter.default.addObserver(forName: NSNotification.Name.UITextFieldTextDidChange, object: textField, queue: OperationQueue(), using: {
+                    notification in
+                    action.isEnabled = textField.hasText
+                })
+            })
+            input.addAction(action)
+            present(input, animated: true, completion: nil)
+        } else {
+            highScores()
+        }
     }
 
     func highScores() {
@@ -112,6 +142,7 @@ class GameViewController: GLKViewController {
         }
         highScoresView.scores = model.highScores
         UIView.animate(withDuration: 1, animations: {
+            self.view.alpha = 1
             self.menuView.alpha = 0
             self.highScoresView.alpha = 1
             self.pauseBtn.alpha = 0
