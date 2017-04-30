@@ -270,10 +270,9 @@ class GameModel {
             } else if (GameModel.timePassed >= 30 && spawnedEnemies == 20) {
                 addEnemy(fireRate: 0.7, position: (x: 1.1, y: 0.6), path: Enemy.Path.loop, bossLives: 5)
             }
-        } else {
+        } else if !isGameOver {
             gameOver()
         }
-        
         checkCollisions()
         move()
     }
@@ -481,7 +480,9 @@ class GameModel {
     }
     
     private func gameOver() {
-        playerExplosion = PlayerExplosion(position: GameModel.player.position, velocity: GameModel.player.velocity, scale: (x: 0.3, y: 0.2))
+        if !GameModel.player.display{
+            playerExplosion = PlayerExplosion(position: GameModel.player.position, velocity: (x: 0, y: 0), scale: (x: 0.3, y: 0.2))
+        }
         isGameOver = true
         save()
         Timer.scheduledTimer(withTimeInterval: 1, repeats: false, block: {
@@ -489,7 +490,6 @@ class GameModel {
             self.playerExplosion = nil
             self.gameOverHandler?()
         })
-        
     }
     
     func setPlayerMovement(value: ShipControlSet.value) {

@@ -16,7 +16,7 @@ class GameViewController: GLKViewController {
     var highScoresView: HighScoreView!
     var pauseBtn: UIButton!
     var menuBtn: UIButton!
-    var gameOverLabel: UILabel!
+    var gameOverView: GameOverView!
     
     private var glkView: GLKView {
         return view as! GLKView
@@ -69,13 +69,10 @@ class GameViewController: GLKViewController {
         menuBtn.addTarget(self, action: #selector(mainMenu), for: .touchDown)
         menuBtn.setTitleColor(.green, for: .normal)
         
-        gameOverLabel = UILabel(frame: CGRect(x: view.bounds.midX - 100, y: view.bounds.height * 0.3, width: 200, height: 50))
-        gameOverLabel.text = "Game Over"
-        gameOverLabel.textColor = .green
-        gameOverLabel.textAlignment = .center
-        gameOverLabel.alpha = 0
+        gameOverView = GameOverView(frame: UIScreen.main.bounds)
+        gameOverView.alpha = 0
         
-        view.addSubview(gameOverLabel)
+        view.addSubview(gameOverView)
         view.addSubview(controls)
         view.addSubview(pauseBtn)
         view.addSubview(menuBtn)
@@ -89,9 +86,9 @@ class GameViewController: GLKViewController {
     }
 
     func gameOver() {
+        controls.isUserInteractionEnabled = false
         UIView.animate(withDuration: 1, animations: {
-            self.view.alpha = 0.5
-            self.gameOverLabel.alpha = 1
+            self.gameOverView.alpha = 1
             self.menuView.alpha = 0
             self.highScoresView.alpha = 0
             self.pauseBtn.alpha = 0
@@ -101,7 +98,7 @@ class GameViewController: GLKViewController {
             Timer.scheduledTimer(withTimeInterval: 1, repeats: false, block: {
                 _ in
                 UIView.animate(withDuration: 1, animations: {
-                    self.gameOverLabel.alpha = 0
+                    self.gameOverView.alpha = 0
                 }, completion: {
                     finished in
                     self.getNameForHighScore()
@@ -116,17 +113,12 @@ class GameViewController: GLKViewController {
             let action = UIAlertAction(title: "Done", style: .default, handler: {
                 [weak input] (_) in
                 self.model.setHighScores(name: input!.textFields![0].text!)
-                self.view.alpha = 1
+                self.view.alpha = 0.5
                 self.highScores()
             })
-            action.isEnabled = false
             input.addTextField(configurationHandler: {
                 textField in
                 textField.placeholder = "Name"
-                NotificationCenter.default.addObserver(forName: NSNotification.Name.UITextFieldTextDidChange, object: textField, queue: OperationQueue(), using: {
-                    notification in
-                    action.isEnabled = textField.hasText
-                })
             })
             input.addAction(action)
             present(input, animated: true, completion: nil)
@@ -187,14 +179,15 @@ class GameViewController: GLKViewController {
     
     func pause(sender: UIButton) {
         model.save()
-        if sender.title(for: .normal) == "Pause" {
-            pauseBtn.setTitle("Resume", for: .normal)
-            controls.isUserInteractionEnabled = false
-        } else if sender.title(for: .normal) == "Resume" {
+        if sender.title(for: .normal) == "Resume" {
             pauseBtn.setTitle("Pause", for: .normal)
             controls.isUserInteractionEnabled = true
+            isPaused = false
+        } else {
+            pauseBtn.setTitle("Resume", for: .normal)
+            controls.isUserInteractionEnabled = false
+            isPaused = true
         }
-        isPaused = !isPaused
     }
     
     func resumeGame() {
